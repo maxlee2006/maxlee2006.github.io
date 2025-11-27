@@ -1,4 +1,7 @@
-layout: home
-title: "Portfolio"
-permalink: /Portfolio
+---
+layout: page
+title: Projects
+permalink: /projects/
+---
+
 
