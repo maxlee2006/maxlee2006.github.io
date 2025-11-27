@@ -9,7 +9,7 @@ permalink: /portfolio/
 
 ## Blender
 
-![Blender]({{ site.baseurl }}/assets/images/long-march.png)
+![Blender]({{ site.baseurl }}/assets/images/BLENDER.gif)
 
 My Blender Projects
 
