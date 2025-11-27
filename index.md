@@ -4,18 +4,17 @@ title: Home
 ---
 
 # Max Lee  
-Software Developer | Game Dev | Systems Programming
+This site is under construction. Expect more soon!
 
 ## Projects
 
 ### Long March Game Project
 Custom C++ engine with tilemap renderer, tracing system, and asset pipeline.  
-[View Repository](https://github.com/yourproject)
 
-### AI Audio Classifier
-Lightweight TensorFlow classifier for audio metadata labeling.  
-[View Repository](https://github.com/yourproject)
+
+
 
 ## Contact
-Email: max@example.com  
-GitHub: https://github.com/yourusername
+Email: max.lee82006@gmail.com
+GitHub: https://github.com/maxlee2006
+Artstation: https://www.artstation.com/disputis545
