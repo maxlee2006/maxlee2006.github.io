@@ -31,7 +31,7 @@ export default function Home() {
 
                 <div className="max-w-5xl space-y-8 text-left">
                 <h1 className="text-6xl font-semibold text-black">Max Lee</h1>
-                <h1 className="text-4xl font-semibold text-black">//Developer, Artist </h1>
+                <h1 className="text-2xl font-semibold text-black">Developer, Artist </h1>
                 </div>
             </div>
         
@@ -42,14 +42,14 @@ export default function Home() {
                 href="/professional-projects"
                 className="group relative flex flex-1 flex-col justify-end bg-black/30 px-6 py-10 text-left text-white transition hover:bg-white/10"
                 >
-                    <p className="text-sm uppercase tracking-wide text-gray-500">Shipped Work</p>
-                    <h2 className="text-2xl font-semibold text-white">Professional Projects</h2>
-                    <p className="mt-2 text-gray-600">Production experience, shipped titles, and team work.</p>
+                    <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work</p>
+                    <h2 className="text-3xl font-semibold text-white">Code</h2>
+                    <p className="mt-2 text-gray-400">Production experience, shipped titles, and team work.</p>
                 </Link>
                 
                 <Link
                 style={{
-                    backgroundImage: 'url(/assets/images/bg.png)',
+                    backgroundImage: 'url(/assets/images/bg-notxt.png)',
                     backgroundSize: 'cover',      // make it cover the whole area
                     backgroundPosition: 'center',  // center it
                   }}
@@ -59,9 +59,9 @@ export default function Home() {
                     <div className=" absolute inset-0 bg-black/80 transition-opacity group-hover:bg-black/50"></div>
 
                     <div className='relative z-10'>
-                        <p className="text-sm uppercase tracking-wide text-gray-500">Art & Personal Work</p>
-                        <h2 className="text-2xl font-semibold text-white">Portfolio</h2>
-                        <p className="mt-2 text-gray-600">Blender projects, visual pieces, and personal experiments.</p>   
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Art & Personal Work</p>
+                        <h2 className="text-3xl font-semibold text-white">Art</h2>
+                        <p className="mt-2 text-gray-400">Blender projects, visual pieces, and personal experiments.</p>   
                     </div>
                 </Link>
 
