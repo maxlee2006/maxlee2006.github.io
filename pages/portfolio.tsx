@@ -18,7 +18,7 @@ export default function Portfolio() {
             
         />
         <div 
-            className="fixed inset-0 w-[2000px] h-[1000px] bg-blue-500 bg-cover bg-center overflow-visible animate-slide-over-slow pointer-events-none"
+            className="fixed inset-0 bg-blue-500 bg-cover bg-center overflow-visible animate-slide-over-slow pointer-events-none"
              style={{
 
             }}

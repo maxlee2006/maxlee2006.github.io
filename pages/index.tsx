@@ -21,13 +21,13 @@ export default function Home() {
             
         />
         <div 
-            className="fixed inset-0 w-[2000px] h-[1000px] bg-blue-500 bg-cover bg-center overflow-visible animate-slide-over-slow pointer-events-none"
+            className="fixed inset-0 bg-blue-500 bg-cover bg-center overflow-visible animate-slide-over-slow pointer-events-none"
              style={{
 
             }}
             
         />
-        
+
       <main className="max-w-5xl mx-auto px-5">
         <nav className="mb-8 pb-4 border-b border-gray-200">
           <Link href="/" className="mr-6 font-medium text-github-blue hover:underline">
