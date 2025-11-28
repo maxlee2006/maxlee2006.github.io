@@ -5,129 +5,61 @@ export default function Home() {
   return (
     <>
       <Head>
-
-      
-
         <meta name="description" content="Max Lee's personal website" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+
       </Head>
 
-      <div 
-            className="fixed inset-0 z-50 bg-cover bg-center overflow-visible animate-slide-over pointer-events-none"
-             style={{
-                backgroundImage: 'url(/assets/images/bg.png)',
-            }}
-            
-        />
-        <div 
-            className="fixed inset-0 bg-blue-500 bg-cover bg-center overflow-visible animate-slide-over-slow pointer-events-none"
-             style={{
 
-            }}
-            
-        />
 
-      <main className="max-w-5xl mx-auto px-5">
-        <nav className="mb-8 pb-4 border-b border-gray-200">
-          <Link href="/" className="mr-6 font-medium text-github-blue hover:underline">
-            Home
 
-          </Link>
-          <Link href="/portfolio" className="mr-6 font-medium text-github-blue hover:underline">
-            Portfolio
-          </Link>
-        </nav>
 
+      <main className="relative flex min-h-screen flex-col items-start justify-start overflow-hidden ">
+            <div className="relative z-10 border-y w-full border border-gray-700 bg-white p-4">
+                <div
+                className="absolute inset-0 -z-10 opacity-40"
+                style={{
+                    backgroundImage: `
+                        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px),
+                        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(54, 54, 54, 0.03) 4px)
+                    `,
+                    backgroundSize: '100% 100%',
+                    pointerEvents: 'none',
+                }}
+                ></div>
+
+                <div className="max-w-5xl space-y-8 text-left">
+                <h1 className="text-8xl font-semibold text-black">Max Lee</h1>
+                <h1 className="text-5xl font-semibold text-black">//Developer, Artist </h1>
+                </div>
+            </div>
         
 
-        <h1 className="text-5xl mb-2 animate-slide-in">Max Lee</h1>
-        <p className="mb-6 animate-slide-in-0.4s" >This site is under construction. Expect more soon!
-            
-        </p>
+        
+            <div className="absolute inset-0 grid grid-cols-1 -z-0 md:grid-cols-4">
+                <Link
+                href="/professional-projects"
+                className="group flex flex-1 flex-col justify-end bg-black/30 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                >
+                    <p className="text-sm uppercase tracking-wide text-gray-500">Shipped Work</p>
+                    <h2 className="text-2xl font-semibold text-white">Professional Projects</h2>
+                    <p className="mt-2 text-gray-600">Production experience, shipped titles, and team work.</p>
+                </Link>
+                
+                <Link
+                href="/portfolio"
+                className="group flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                >
+                    <p className="text-sm uppercase tracking-wide text-gray-500">Art & Personal Work</p>
+                    <h2 className="text-2xl font-semibold text-white">Portfolio</h2>
+                    <p className="mt-2 text-gray-600">Blender projects, visual pieces, and personal experiments.</p>
+                </Link>
+            </div>
 
-        <h2 className="text-4xl mt-6 mb-2 pb-1 border-b border-gray-200 animate-slide-in-0.5s">Projects</h2>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
-          <h3 className="text-2xl mt-4 mb-2">
-            Music Nerd Website |{' '}
-            <a href="https://musicnerd.xyz" className="btn" target="_blank" rel="noopener noreferrer">
-              Visit the website
-            </a>
-          </h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">May 2025 - July 2025</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
-          <p className="mb-2">Refactored and enhanced search feature and artist pages.</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">50% faster artist search endpoint using indexing and trigram search</li>
-            <li className="mb-1">Generated artist bios using OpenAI API</li>
-            <li className="mb-1">Wrote tests using Jest</li>
-          </ul>
-        </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0">
-          <h3 className="text-2xl mt-4 mb-2">
-            Music Nerd Chrome Extension |{' '}
-            <a
-              href="https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd?utm_source=item-share-cb"
-              className="btn"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Download the extension
-            </a>
-          </h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">July 2025 - August 2025</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
-          <p className="mb-2">Created, programmed, designed, and released a chrome extension</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">Designed UI</li>
-            <li className="mb-1">Pulled Music Nerd data from backend database</li>
-          </ul>
-        </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0">
-          <h3 className="text-2xl mt-4 mb-2">Long March Game Project</h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">September 2025 - April 2026</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
-          <p className="mb-2">Custom C++ engine with OpenGL.</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">Tilemap rendering</li>
-            <li className="mb-1">Object factory system</li>
-            <li className="mb-1">Deserialization using JSON</li>
-          </ul>
-        </div>
-
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0">
-          <h3 className="text-2xl mt-4 mb-2">EVERGREEN</h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">January 2025 - April 2025</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
-          <p className="mb-2">Custom C engine using in house graphics API.</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">Initial engine architecture</li>
-            <li className="mb-1">Deserialization with text files</li>
-            <li className="mb-1">Entity lists and scene organization</li>
-          </ul>
-        </div>
-
-        <h2 className="text-4xl mt-6 mb-2 pb-1 border-b border-gray-200">Contact</h2>
-        <p className="mb-2">
-          Email: <a href="mailto:max.lee82006@gmail.com" className="text-github-blue hover:underline">max.lee82006@gmail.com</a>
-        </p>
-        <p className="mb-2">
-          <a href="https://github.com/maxlee2006" className="btn" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-        </p>
-        <p className="mb-2">
-          <a href="https://www.artstation.com/disputis545" className="btn" target="_blank" rel="noopener noreferrer">
-            Artstation
-          </a>
-        </p>
       </main>
     </>
   )

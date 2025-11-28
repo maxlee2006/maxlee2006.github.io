@@ -11,19 +11,9 @@ export default function Portfolio() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div 
-            className="fixed inset-0 z-50 bg-cover bg-center overflow-visible animate-slide-over pointer-events-none"
-             style={{
-                backgroundImage: 'url(/assets/images/bg.png)',
-            }}
             
         />
-        <div 
-            className="fixed inset-0 bg-blue-500 bg-cover bg-center overflow-visible animate-slide-over-slow pointer-events-none"
-             style={{
 
-            }}
-            
-        />
       <main className="max-w-5xl mx-auto px-5">
         {/* Static overlay */}
         <div 

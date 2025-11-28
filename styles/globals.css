@@ -1,24 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Coral+Pixels&family=Funnel+Display:wght@300..800&family=Major+Mono+Display&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
+
+:root {
+  --font-mono-display: "Major Mono Display", monospace;
+  --font-coral-pixels: "Coral Pixels", sans-serif;
+  --font-funnel-display: "Funnel Display", sans-serif;
+}
+
 @layer base {
   html,
   body {
-    @apply max-w-5xl mx-auto px-5 py-5;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    @apply min-h-screen bg-black text-gray-100;
+    font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
   }
 }
 
+h1, h2 {
+  font-family: var(--font-mono-display);
+}
+
+p {
+  font-family: var(--font-funnel-display);
+}
+
 @layer components {
   .btn {
-    @apply inline-block px-3.5 py-2 bg-github-blue text-white rounded-md no-underline mt-2.5;
+    @apply inline-flex items-center px-3.5 py-2 bg-transparent text-github-blue rounded-md no-underline mt-2.5;
   }
-  
   .btn:hover {
-    @apply bg-github-blue-dark no-underline;
+    @apply text-github-blue-dark bg-transparent;
   }
 }
 
