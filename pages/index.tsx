@@ -52,7 +52,7 @@ export default function Home() {
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work</p>
                         <h2 className="text-3xl font-semibold text-white">Code</h2>
-                        <p className="mt-2 text-gray-400">Production experience, shipped titles, and team work.</p>
+                        <p className="mt-2 text-gray-400">Production experience, shipped projects, and team work</p>
                     </div>
                     
                 </Link>
@@ -73,7 +73,7 @@ export default function Home() {
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Art & Personal Work</p>
                         <h2 className="text-3xl font-semibold text-white">Art</h2>
-                        <p className="mt-2 text-gray-400">Blender projects, visual pieces, and personal experiments.</p>   
+                        <p className="mt-2 text-gray-400">Blender projects, animations, and sketches</p>   
                     </div>
                 </Link>
 
