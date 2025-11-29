@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -6,6 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        megrim: ['var(--font-megrim)'],
+        coral: ['var(--font-coral-pixels)'],
+        monoDisplay: ['var(--font-mono-display)'],
+        funnel: ['var(--font-funnel-display)']
+      },
       colors: {
         'github-blue': '#0366d6',
         'github-blue-dark': '#0256c0',

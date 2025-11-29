@@ -29,9 +29,9 @@ export default function Home() {
                 }}
                 ></div>
 
-                <div className="max-w-5xl space-y-8 text-left">
-                <h1 className="text-6xl font-semibold text-black">Max Lee</h1>
-                <h1 className="text-2xl font-semibold text-black">Developer, Artist </h1>
+                <div className="max-w-5xl space-y-4 text-left">
+                <h1 className="text-7xl p-0 font-funnel animate-slide-in-0.5s font-semibold  text-black">Max Lee</h1>
+                <h1 className="text-2xl animate-slide-in-0.7s font-semibold text-black">Developer, Artist </h1>
                 </div>
             </div>
         
@@ -39,14 +39,25 @@ export default function Home() {
         
             <div className="absolute inset-0 grid grid-cols-1 -z-0 md:grid-cols-4">
                 <Link
+                style={{
+                  backgroundImage: 'url(/assets/images/website.png)',
+                  backgroundSize: 'cover',      // make it cover the whole area
+                  backgroundPosition: 'center',  // center it
+                }}
                 href="/professional-projects"
-                className="group relative flex flex-1 flex-col justify-end bg-black/30 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                className="group relative flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
                 >
-                    <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work</p>
-                    <h2 className="text-3xl font-semibold text-white">Code</h2>
-                    <p className="mt-2 text-gray-400">Production experience, shipped titles, and team work.</p>
+                    <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
+
+                    <div className='relative z-10'>
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work</p>
+                        <h2 className="text-3xl font-semibold text-white">Code</h2>
+                        <p className="mt-2 text-gray-400">Production experience, shipped titles, and team work.</p>
+                    </div>
+                    
                 </Link>
                 
+
                 <Link
                 style={{
                     backgroundImage: 'url(/assets/images/bg-notxt.png)',
@@ -55,13 +66,36 @@ export default function Home() {
                   }}
                 href="/portfolio"
                 className="group relative flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
-                >
-                    <div className=" absolute inset-0 bg-black/80 transition-opacity group-hover:bg-black/50"></div>
+                >                    
+                
+                <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Art & Personal Work</p>
                         <h2 className="text-3xl font-semibold text-white">Art</h2>
                         <p className="mt-2 text-gray-400">Blender projects, visual pieces, and personal experiments.</p>   
+                    </div>
+                </Link>
+
+
+                <Link
+                style={{
+                    backgroundImage: 'url(/assets/images/ue-still.png)',
+                    backgroundSize: 'cover',      // make it cover the whole area
+                    backgroundPosition: 'top',  // center it
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundImage = "url('/assets/images/UE5.gif')"}
+                  onMouseLeave={e => e.currentTarget.style.backgroundImage = "url('/assets/images/ue-still.png')" }
+                href="/design"
+                className="group relative flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                >                    
+                
+                <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
+
+                    <div className='relative z-10'>
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Game Design Work</p>
+                        <h2 className="text-3xl font-semibold text-white">Design</h2>
+                        <p className="mt-2 text-gray-400">Unreal Engine Projects, Level Builders</p>   
                     </div>
                 </Link>
 

@@ -16,7 +16,20 @@ export default function Professional() {
 
 
       <main className="max-w-5xl mx-auto px-5">
+
+
         {/* Static overlay */}
+
+        <Link href="/"
+        className="fixed -left-28 top-0 h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
+        >
+          <div className="-rotate-90 flex  left-[-120px]">
+          <h1 className="text-black text-6xl font-funnel">
+          ^_BACK_^
+          </h1>
+          </div>
+        </Link>
+
         <div 
             className="fixed inset-0 -z-10 opacity-30"
             style={{
@@ -28,17 +41,7 @@ export default function Professional() {
             pointerEvents: 'none'
             }}
         ></div>
-        <nav className="mb-8 pb-4 border-b border-gray-200">
-          <Link href="/" className="mr-6 font-medium text-github-blue hover:underline">
-            Home
 
-          </Link>
-          <Link href="/portfolio" className="mr-6 font-medium text-github-blue hover:underline">
-            Portfolio
-          </Link>
-
-          
-        </nav>
 
         
 
@@ -54,7 +57,7 @@ export default function Professional() {
             <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
             Music Nerd Website {' '}
             <a href="https://musicnerd.xyz" className="btn" target="_blank" rel="noopener noreferrer">
-            
+            Website
             </a>
           </h3>
           <h4 className="text-xl mt-3 mb-1 text-gray-600">May 2025 - July 2025</h4>
@@ -68,8 +71,9 @@ export default function Professional() {
           </ul>
         </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0">
-          <h3 className="text-2xl mt-4 mb-2">
+        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
+          <h3 className="text-2xl mt-4 mb-2 flex items-center gap-3">
+          <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
             Music Nerd Chrome Extension |{' '}
             <a
               href="https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd?utm_source=item-share-cb"
@@ -90,7 +94,7 @@ export default function Professional() {
           </ul>
         </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0">
+        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
           <h3 className="text-2xl mt-4 mb-2">Long March Game Project</h3>
           <h4 className="text-xl mt-3 mb-1 text-gray-600">September 2025 - April 2026</h4>
           <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
@@ -103,7 +107,7 @@ export default function Professional() {
           </ul>
         </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0">
+        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
           <h3 className="text-2xl mt-4 mb-2">EVERGREEN</h3>
           <h4 className="text-xl mt-3 mb-1 text-gray-600">January 2025 - April 2025</h4>
           <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
