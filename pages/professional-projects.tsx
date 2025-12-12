@@ -1,7 +1,13 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Professional() {
+  const [openProject, setOpenProject] = useState<string | null>(null)
+
+  const toggleProject = (project: string) => {
+    setOpenProject(openProject === project ? null : project)
+  }
   return (
     <>
       <Head>
@@ -51,73 +57,152 @@ export default function Professional() {
 
         <h2 className="text-4xl mt-6 mb-2 pb-1 border-b border-gray-200 animate-slide-in-0.5s">Projects</h2>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
+        <div className="mb-4 animate-slide-in-0.6s">
+          <button
+            onClick={() => toggleProject('music-nerd-website')}
+            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            style={{
+              backgroundImage: 'url(/assets/images/website.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
             
-          <h3 className="text-2xl mt-4 mb-2 flex items-center gap-3">
-            <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
-            Music Nerd Website {' '}
-            <a href="https://musicnerd.xyz" className="btn" target="_blank" rel="noopener noreferrer">
-            Website
-            </a>
-          </h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">May 2025 - July 2025</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
-          <p className="mb-2">Refactored and enhanced search feature and artist pages.</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">50% faster artist search endpoint using indexing and trigram search</li>
-            <li className="mb-1">Generated artist bios using OpenAI API</li>
-            <li className="mb-1">Wrote tests using Jest</li>
-          </ul>
+            <div className="relative z-10 flex items-center gap-3">
+              <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
+              <h3 className="text-2xl font-semibold text-white">Music Nerd Website</h3>
+            </div>
+            <span className="relative z-10 text-2xl text-white">
+              {openProject === 'music-nerd-website' ? '−' : '+'}
+            </span>
+          </button>
+          
+          {openProject === 'music-nerd-website' && (
+            <div className="p-6 border-b border-gray-200">
+              <a href="https://musicnerd.xyz" className="btn mb-4 inline-block" target="_blank" rel="noopener noreferrer">
+                Website
+              </a>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">May 2025 - July 2025</h4>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
+              <p className="mb-2">Refactored and enhanced search feature and artist pages.</p>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
+              <ul className="ml-6 mb-4">
+                <li className="mb-1">50% faster artist search endpoint using indexing and trigram search</li>
+                <li className="mb-1">Generated artist bios using OpenAI API</li>
+                <li className="mb-1">Wrote tests using Jest</li>
+              </ul>
+            </div>
+          )}
         </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
-          <h3 className="text-2xl mt-4 mb-2 flex items-center gap-3">
-          <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
-            Music Nerd Chrome Extension |{' '}
-            <a
-              href="https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd?utm_source=item-share-cb"
-              className="btn"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Download the extension
-            </a>
-          </h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">July 2025 - August 2025</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
-          <p className="mb-2">Created, programmed, designed, and released a chrome extension</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">Designed UI</li>
-            <li className="mb-1">Pulled Music Nerd data from backend database</li>
-          </ul>
+        <div className="mb-4 animate-slide-in-0.6s">
+          <button
+            onClick={() => toggleProject('music-nerd-extension')}
+            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            style={{
+              backgroundImage: 'url(/assets/images/website.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+            
+            <div className="relative z-10 flex items-center gap-3">
+              <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
+              <h3 className="text-2xl font-semibold text-white">Music Nerd Chrome Extension</h3>
+            </div>
+            <span className="relative z-10 text-2xl text-white">
+              {openProject === 'music-nerd-extension' ? '−' : '+'}
+            </span>
+          </button>
+          
+          {openProject === 'music-nerd-extension' && (
+            <div className="p-6 border-b border-gray-200">
+              <a
+                href="https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd?utm_source=item-share-cb"
+                className="btn mb-4 inline-block"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download the extension
+              </a>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">July 2025 - August 2025</h4>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
+              <p className="mb-2">Created, programmed, designed, and released a chrome extension</p>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
+              <ul className="ml-6 mb-4">
+                <li className="mb-1">Designed UI</li>
+                <li className="mb-1">Pulled Music Nerd data from backend database</li>
+              </ul>
+            </div>
+          )}
         </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
-          <h3 className="text-2xl mt-4 mb-2">Long March Game Project</h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">September 2025 - April 2026</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
-          <p className="mb-2">Custom C++ engine with OpenGL.</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">Tilemap rendering</li>
-            <li className="mb-1">Object factory system</li>
-            <li className="mb-1">Deserialization using JSON</li>
-          </ul>
+        <div className="mb-4 animate-slide-in-0.6s">
+          <button
+            onClick={() => toggleProject('long-march')}
+            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            style={{
+              backgroundImage: 'url(/assets/images/long-march.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+            
+            <h3 className="relative z-10 text-2xl font-semibold text-white">Long March Game Project</h3>
+            <span className="relative z-10 text-2xl text-white">
+              {openProject === 'long-march' ? '−' : '+'}
+            </span>
+          </button>
+          
+          {openProject === 'long-march' && (
+            <div className="p-6 border-b border-gray-200">
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">September 2025 - April 2026</h4>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
+              <p className="mb-2">Custom C++ engine with OpenGL.</p>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
+              <ul className="ml-6 mb-4">
+                <li className="mb-1">Tilemap rendering</li>
+                <li className="mb-1">Object factory system</li>
+                <li className="mb-1">Deserialization using JSON</li>
+              </ul>
+            </div>
+          )}
         </div>
 
-        <div className="mb-8 pb-6 border-b border-gray-200 last:border-b-0 animate-slide-in-0.6s">
-          <h3 className="text-2xl mt-4 mb-2">EVERGREEN</h3>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">January 2025 - April 2025</h4>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
-          <p className="mb-2">Custom C engine using in house graphics API.</p>
-          <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-          <ul className="ml-6 mb-4">
-            <li className="mb-1">Initial engine architecture</li>
-            <li className="mb-1">Deserialization with text files</li>
-            <li className="mb-1">Entity lists and scene organization</li>
-          </ul>
+        <div className="mb-4 animate-slide-in-0.6s">
+          <button
+            onClick={() => toggleProject('evergreen')}
+            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            style={{
+              backgroundImage: 'url(/assets/images/website.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+            
+            <h3 className="relative z-10 text-2xl font-semibold text-white">EVERGREEN</h3>
+            <span className="relative z-10 text-2xl text-white">
+              {openProject === 'evergreen' ? '−' : '+'}
+            </span>
+          </button>
+          
+          {openProject === 'evergreen' && (
+            <div className="p-6 border-b border-gray-200">
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">January 2025 - April 2025</h4>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
+              <p className="mb-2">Custom C engine using in house graphics API.</p>
+              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
+              <ul className="ml-6 mb-4">
+                <li className="mb-1">Initial engine architecture</li>
+                <li className="mb-1">Deserialization with text files</li>
+                <li className="mb-1">Entity lists and scene organization</li>
+              </ul>
+            </div>
+          )}
         </div>
 
         <h2 className="text-4xl mt-6 mb-2 pb-1 border-b border-gray-200">Contact</h2>

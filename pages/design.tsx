@@ -50,15 +50,22 @@ export default function Design() {
 
         <h1 className="text-5xl mb-8 animate-slide-in-0.5s">Design Portfolio</h1>
 
-        {/* Modeling Category */}
+        {/* UE5 Category */}
         <div 
         className="mb-4 animate-slide-in-0.6s">
+          
           <button
             onClick={() => toggleCategory('modeling')}
-            className="w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white"
+            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            style={{
+              backgroundImage: 'url(/assets/images/ue-still.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
           >
-            <h2 className="text-3xl font-semibold">Unreal Engine 5</h2>
-            <span className="text-2xl">
+            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+            <h2 className="relative z-10 text-3xl font-semibold text-white">Unreal Engine 5</h2>
+            <span className="relative z-10 text-2xl text-white">
               {openCategory === 'modeling' ? '−' : '+'}
             </span>
           </button>
@@ -68,9 +75,17 @@ export default function Design() {
               <div className="space-y-4">
                 {/* Easy to edit div objects */}
                 <div className="p-4">
-                  <h3 className="text-xl mb-2">Design Work</h3>
-                  <p className="text-gray-300">Under Construction. Come back soon.</p>
-                  <img src="/assets/images/UE5.gif" alt="Design Project" className="mt-3 max-w-full h-auto rounded" />
+                  <h3 className="text-xl mb-2">Parkour Shooter Prototype</h3>
+                  <p className="text-gray-500">Summer 2024</p>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/DQ9c0tJliUY"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
                 </div>
 
                 {/* Add more divs as needed */}
