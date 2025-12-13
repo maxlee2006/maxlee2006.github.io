@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 
 export default function Portfolio() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
-  const [selectedItem, setSelectedItem] = useState<{image: string[], title?: string, description?: string, date?: string, link?: string} | null>(null)
+  const [selectedItem, setSelectedItem] = useState<{image: string[], title?: string, description?: string, date?: string, link?: string[]} | null>(null)
 
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category)
   }
 
-  const openModal = (item: {image: string[], title?: string, description?: string, date?: string}) => {
+  const openModal = (item: {image: string[], title?: string, description?: string, date?: string, link?: string[]}) => {
     setSelectedItem(item)
   }
 
@@ -56,24 +56,30 @@ export default function Portfolio() {
         ></div>
         
 
+{/*-------------------------------------------------------------------------------------*/}
+
 
         <h1 className="text-5xl mb-8 animate-slide-in-0.5s">Portfolio</h1>
+
+
+{/*-------------------------------------------------------------------------------------*/}
+
 
         {/* Modeling Category */}
         <div 
         className="mb-4 animate-slide-in-0.6s">
           <button
             onClick={() => toggleCategory('modeling')}
-            className="relative w-full px-6 h-52 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
+            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
             style={{
-              backgroundImage: 'url(/assets/images/bg-notxt.png)',
+              backgroundImage: 'url(/assets/images/vicar-head.jpg)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
             <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
             
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Modeling</h2>
+            <h2 className="relative z-10 text-3xl font-semibold text-white">Projects</h2>
             <span className=" relative z-10 text-2xl text-white">
               {openCategory === 'modeling' ? '−' : '+'}
             </span>
@@ -93,7 +99,7 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/gun-model.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
                 </div>
 
                 
@@ -107,7 +113,7 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/kasu-render.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
                 </div>
 
 
@@ -121,8 +127,24 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/bg-notxt.png" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
                 </div>
+
+
+                <div 
+                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => openModal({
+                    image: ["/assets/images/rifle-dark.jpg", "/assets/images/rifle-light.jpg",  "/assets/images/rifle-inspect.png"],
+                    title: "LR-22 Reacher",
+                    description: "A weapon model I created for use in a Parkour Prototype in Unreal Engine 5. Worked on as a high school project. Modeled, Textured, Retopologized, Baked, and Rigged in 2 months during late 2023, and animated in March of 2024.",
+                    date: "October 2023 - November 2023, March 2024 | Blender",
+                    link: ["9wCl1X0lJO8"]
+                  })}
+                >
+                  <img src="/assets/images/rifle-dark.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                </div>
+
 
 
                 <div 
@@ -135,8 +157,23 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/kasu-old-render1.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
                 </div>
+
+                <div 
+                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => openModal({
+                    image: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
+                    title: "Parkour Model and Animation Set",
+                    description: "An early version of the parkour animation set I ended up using in my Parkour Prototype. Uses an Unfinished humanoid rig, gun rig, and sword model, All created of the course of 2023. Experimented with using Shape Keys and other more advanced rigs to make more complex sections of the humanoid rig.",
+                    date: "January 2023 - October 2023 | Blender",
+                    link: ["uc1CA_6jRBE", "60WZZkM7Z2c"]
+                  })}
+                >
+                  <img src="/assets/images/crappy-old-kasu.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                </div>
+
 
                 {/* Add more grid items as needed */}
                 
@@ -146,42 +183,61 @@ export default function Portfolio() {
           )}
         </div>
 
+
+{/*-------------------------------------------------------------------------------------*/}
+
+
         {/* Animation Category */}
         <div className="mb-4 animate-slide-in-0.6s">
-          <button
+        <button
             onClick={() => toggleCategory('animation')}
-            className="relative w-full px-6 py-20 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
             style={{
-              backgroundImage: 'url(/assets/images/bg-notxt.png)',
+              backgroundImage: 'url(/assets/images/DMT.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
             <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
             
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Animation</h2>
-            <span className="relative z-10 text-2xl text-white">
+            <h2 className="relative z-10 text-3xl font-semibold text-white">Animations</h2>
+            <span className=" relative z-10 text-2xl text-white">
               {openCategory === 'animation' ? '−' : '+'}
             </span>
           </button>
           {openCategory === 'animation' && (
             <div className="p-6">
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
                 {/* Easy to edit div objects */}
-                <div className="p-4">
-                  <h3 className="text-xl mb-2">Blender Animations</h3>
-                  <p className="text-gray-300">Under Construction.</p>
-                  <video className="mt-3 max-w-full h-auto rounded" controls>
-                    <source src="/path/to/video.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+
+
+                <div 
+                  className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => openModal({
+                    image: ["/assets/images/DMT.png"],
+                    title: "Dead Man's Tale (Destiny 2 Fan Animation)",
+                    description: "A redo of an animation I created in 2022. Worked on in one day. Mostly tweaking curves and adding a little more movement where needed. ",
+                    date: "May 2025 | Blender",
+                    link: ["9FSpX1YcTv0"]
+                  })}
+                >
+                  <img src="/assets/images/DMT.png" alt="Modeling project" className="w-full h-full object-cover"/>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
                 </div>
 
-                {/* Add more divs as needed */}
+               
+
+                {/* Add more grid items as needed */}
+                
+
               </div>
             </div>
           )}
         </div>
+
+
+{/*-------------------------------------------------------------------------------------*/}
+
 
         {/* Sketches Category */}
         <div className="mb-4 animate-slide-in-0.6s">
@@ -254,13 +310,31 @@ export default function Portfolio() {
               >
                 ×
               </button>
-              {selectedItem.image.map((imageSrc, index) => (
-                <img key={index} src={imageSrc} alt={`${selectedItem.title || 'Image'} ${index + 1}`} className="max-w-full mb-4 last:mb-0" />
-              ))}
+              
+              {selectedItem.title && <h3 className='text-2xl font-monoDisplay mb-2'>{selectedItem.title}</h3>}
+              {selectedItem.date && <h4 className='text-xl font-funnel mb-2'>{selectedItem.date}</h4>}
+              {selectedItem.description && <h3 className='text-gray-600 font-funnel'>{selectedItem.description}</h3>}
+              <div className="flex flex-col items-center justify-center">
+                {selectedItem.image.map((imageSrc, index) => (
+                  <img key={index} src={imageSrc} alt={`${selectedItem.title || 'Image'} ${index + 1}`} className="max-w-full mb-4 py-4 last:mb-0" />
+                ))}
+              </div>
+
+              {selectedItem.link && <div className="flex flex-col items-center justify-center">
+                {selectedItem.link.map((linksrc, index) => (
+                  <iframe
+                  className=" inset-0 w-full h-full"
+                  style={{ aspectRatio: '16/9' }}
+                  src={"https://www.youtube.com/embed/" + linksrc}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                ))}
+              </div>}
 
 
-              {selectedItem.title && <h3 className='text-2xl font-semibold mb-2'>{selectedItem.title}</h3>}
-              {selectedItem.description && <h3 className='text-gray-600'>{selectedItem.description}</h3>}
             </div>
             </div>
             
