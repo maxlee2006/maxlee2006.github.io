@@ -84,7 +84,7 @@ export default function Professional() {
                 <div 
                   className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
-                    image: ["/assets/images/mn-web-2.PNG"],
+                    image: ["/assets/images/mn-web-2.png"],
                     title: "Music Nerd Website",
                     description: "Refactored and enhanced search feature and artist pages.\n\nContributions:\n- 50% faster artist search endpoint using indexing and trigram search\n- Generated artist bios using OpenAI API\n- Wrote tests using Jest",
                     date: "May 2025 - July 2025 | Programmer",
