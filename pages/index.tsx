@@ -71,7 +71,7 @@ export default function Home() {
                 <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
-                        <p className="text-sm uppercase tracking-wide text-gray-300">Art & Personal Work</p>
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Art Projects</p>
                         <h2 className="text-3xl font-semibold text-white">Art</h2>
                         <p className="mt-2 text-gray-400">Blender projects, animations, and sketches</p>   
                     </div>
@@ -93,9 +93,9 @@ export default function Home() {
                 <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
-                        <p className="text-sm uppercase tracking-wide text-gray-300">Game Design Work</p>
-                        <h2 className="text-3xl font-semibold text-white">Design</h2>
-                        <p className="mt-2 text-gray-400">Unreal Engine Projects, Level Builders</p>   
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Engine building and In-Engine work</p>
+                        <h2 className="text-3xl font-semibold text-white">Games</h2>
+                        <p className="mt-2 text-gray-400">Unreal Engine and custom engines</p>   
                     </div>
                 </Link>
 

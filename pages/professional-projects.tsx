@@ -1,25 +1,31 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
+import MediaModal from '../components/MediaModal'
 
 export default function Professional() {
   const [openProject, setOpenProject] = useState<string | null>(null)
+  const [selectedItem, setSelectedItem] = useState<{image: string[], title?: string, description?: string, date?: string, link?: string[]} | null>(null)
 
   const toggleProject = (project: string) => {
     setOpenProject(openProject === project ? null : project)
   }
+
+  const openModal = (item: {image: string[], title?: string, description?: string, date?: string, link?: string[]}) => {
+    setSelectedItem(item)
+  }
+
+  const closeModal = () => {
+    setSelectedItem(null)
+  }
+
   return (
     <>
       <Head>
-
-      
-
         <meta name="description" content="Max Lee's professional projects" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-
 
       <main className="max-w-5xl mx-auto px-5">
 
@@ -49,158 +55,61 @@ export default function Professional() {
         ></div>
 
 
-        
-
-
-            
-
-
-        <h2 className="text-4xl mt-6 mb-2 pb-1 border-b border-gray-200 animate-slide-in-0.5s">Projects</h2>
+        <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">Professional Projects</h1>
 
         <div className="mb-4 animate-slide-in-0.6s">
           <button
-            onClick={() => toggleProject('music-nerd-website')}
-            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            onClick={() => toggleProject('music-nerd')}
+            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
             style={{
-              backgroundImage: 'url(/assets/images/website.png)',
+              backgroundImage: 'url(/assets/images/mn-web.png)',
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'top',
             }}
           >
             <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
             
             <div className="relative z-10 flex items-center gap-3">
-              <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
-              <h3 className="text-2xl font-semibold text-white">Music Nerd Website</h3>
+              <img src="/assets/images/mn-logo-128.png" alt="" className="w-8 h-8" />
+              <h2 className="text-2xl font-semibold text-white">Music Nerd</h2>
             </div>
             <span className="relative z-10 text-2xl text-white">
-              {openProject === 'music-nerd-website' ? '−' : '+'}
+              {openProject === 'music-nerd' ? '−' : '+'}
             </span>
           </button>
           
-          {openProject === 'music-nerd-website' && (
-            <div className="p-6 border-b border-gray-200">
-              <a href="https://musicnerd.xyz" className="btn mb-4 inline-block" target="_blank" rel="noopener noreferrer">
-                Website
-              </a>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">May 2025 - July 2025</h4>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
-              <p className="mb-2">Refactored and enhanced search feature and artist pages.</p>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-              <ul className="ml-6 mb-4">
-                <li className="mb-1">50% faster artist search endpoint using indexing and trigram search</li>
-                <li className="mb-1">Generated artist bios using OpenAI API</li>
-                <li className="mb-1">Wrote tests using Jest</li>
-              </ul>
-            </div>
-          )}
-        </div>
+          {openProject === 'music-nerd' && (
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
+                <div 
+                  className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => openModal({
+                    image: ["/assets/images/mn-web-2.PNG"],
+                    title: "Music Nerd Website",
+                    description: "Refactored and enhanced search feature and artist pages.\n\nContributions:\n- 50% faster artist search endpoint using indexing and trigram search\n- Generated artist bios using OpenAI API\n- Wrote tests using Jest",
+                    date: "May 2025 - July 2025 | Programmer",
+                    link: ["https://www.musicnerd.xyz/"]
+                  })}
+                >
+                  <h2 className="relative z-10 text-3xl font-semibold text-white">Website</h2>
+                  <img src="/assets/images/mn-web-2.png" alt="Music Nerd Website" className="w-full h-full object-cover"/>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                </div>
 
-        <div className="mb-4 animate-slide-in-0.6s">
-          <button
-            onClick={() => toggleProject('music-nerd-extension')}
-            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/website.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <div className="relative z-10 flex items-center gap-3">
-              <img src="/assets/images/mn-logo-128.png" alt="" className="w-6 h-6" />
-              <h3 className="text-2xl font-semibold text-white">Music Nerd Chrome Extension</h3>
-            </div>
-            <span className="relative z-10 text-2xl text-white">
-              {openProject === 'music-nerd-extension' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openProject === 'music-nerd-extension' && (
-            <div className="p-6 border-b border-gray-200">
-              <a
-                href="https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd?utm_source=item-share-cb"
-                className="btn mb-4 inline-block"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Download the extension
-              </a>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">July 2025 - August 2025</h4>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Programmer</h4>
-              <p className="mb-2">Created, programmed, designed, and released a chrome extension</p>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-              <ul className="ml-6 mb-4">
-                <li className="mb-1">Designed UI</li>
-                <li className="mb-1">Pulled Music Nerd data from backend database</li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="mb-4 animate-slide-in-0.6s">
-          <button
-            onClick={() => toggleProject('long-march')}
-            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/long-march.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <h3 className="relative z-10 text-2xl font-semibold text-white">Long March Game Project</h3>
-            <span className="relative z-10 text-2xl text-white">
-              {openProject === 'long-march' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openProject === 'long-march' && (
-            <div className="p-6 border-b border-gray-200">
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">September 2025 - April 2026</h4>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
-              <p className="mb-2">Custom C++ engine with OpenGL.</p>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-              <ul className="ml-6 mb-4">
-                <li className="mb-1">Tilemap rendering</li>
-                <li className="mb-1">Object factory system</li>
-                <li className="mb-1">Deserialization using JSON</li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="mb-4 animate-slide-in-0.6s">
-          <button
-            onClick={() => toggleProject('evergreen')}
-            className="relative w-full px-6 py-6 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/website.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <h3 className="relative z-10 text-2xl font-semibold text-white">EVERGREEN</h3>
-            <span className="relative z-10 text-2xl text-white">
-              {openProject === 'evergreen' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openProject === 'evergreen' && (
-            <div className="p-6 border-b border-gray-200">
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">January 2025 - April 2025</h4>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Producer/Programmer</h4>
-              <p className="mb-2">Custom C engine using in house graphics API.</p>
-              <h4 className="text-xl mt-3 mb-1 text-gray-600">Contributions:</h4>
-              <ul className="ml-6 mb-4">
-                <li className="mb-1">Initial engine architecture</li>
-                <li className="mb-1">Deserialization with text files</li>
-                <li className="mb-1">Entity lists and scene organization</li>
-              </ul>
+                <div 
+                  className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => openModal({
+                    image: ["/assets/images/mn-ext.png"],
+                    title: "Music Nerd Chrome Extension",
+                    description: "Created, programmed, designed, and released a Chrome extension.\n\nContributions:\n- Designed UI\n- Pulled Music Nerd data from backend database \n\nDownload here: \nhttps://chromewebstore.google.com/detail/Music%20Nerd%20Chrome%20Extension/hoafengifajodeelbinmgbehghofjnmd?utm_source=ext_app_menu",
+                    date: "July 2025 - August 2025 | Programmer",
+                  })}
+                >
+                  <h2 className="relative z-10 text-3xl font-semibold text-white">Chrome Extension</h2>
+                  <img src="/assets/images/mn-ext.png" alt="Music Nerd Extension" className="w-full h-full object-cover"/>
+                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -219,6 +128,8 @@ export default function Professional() {
             Artstation
           </a>
         </p>
+
+        <MediaModal item={selectedItem} onClose={closeModal} />
       </main>
     </>
   )

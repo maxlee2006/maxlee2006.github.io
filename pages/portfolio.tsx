@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import MediaModal from '../components/MediaModal'
 
 export default function Portfolio() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
@@ -59,7 +60,7 @@ export default function Portfolio() {
 {/*-------------------------------------------------------------------------------------*/}
 
 
-        <h1 className="text-5xl mb-8 animate-slide-in-0.5s">Portfolio</h1>
+        <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">ART</h1>
 
 
 {/*-------------------------------------------------------------------------------------*/}
@@ -93,7 +94,7 @@ export default function Portfolio() {
                   className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/gun-model.jpg"],
-                    title: "Gun Model",
+                    title: "PS-22 Tracer",
                     description: "A small side project that I modeled, baked, and textured over the course of a week.",
                     date: "September 2025 | Blender"
                   })}
@@ -107,7 +108,7 @@ export default function Portfolio() {
                   className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/kasu-render.jpg", "/assets/images/kasu-LQ.jpg"],
-                    title: "Head Sculpt",
+                    title: "Kasu's Head",
                     description: "A sculpt I made for use in a larger character model I'm working on. Modeled, Baked, Retopologized, and textured over the course of two weeks.",
                     date: "November 2025 | Blender"
                   })}
@@ -138,7 +139,7 @@ export default function Portfolio() {
                     title: "LR-22 Reacher",
                     description: "A weapon model I created for use in a Parkour Prototype in Unreal Engine 5. Worked on as a high school project. Modeled, Textured, Retopologized, Baked, and Rigged in 2 months during late 2023, and animated in March of 2024.",
                     date: "October 2023 - November 2023, March 2024 | Blender",
-                    link: ["9wCl1X0lJO8"]
+                    link: ["https://youtube.com/embed/9wCl1X0lJO8"]
                   })}
                 >
                   <img src="/assets/images/rifle-dark.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
@@ -151,7 +152,7 @@ export default function Portfolio() {
                   className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/kasu-old-render1.jpg", "/assets/images/kasu-old-render2.jpg", "/assets/images/kasu-old.jpg"],
-                    title: "Parkour Character",
+                    title: "Kasu V1",
                     description: "A model I originally made for an art exhibition, I eventually used in my parkour prototype in Unreal Engine 5. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
                     date: "January 2024 - October 2024 | Blender"
                   })}
@@ -164,10 +165,10 @@ export default function Portfolio() {
                   className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
-                    title: "Parkour Model and Animation Set",
+                    title: "Old Kasu",
                     description: "An early version of the parkour animation set I ended up using in my Parkour Prototype. Uses an Unfinished humanoid rig, gun rig, and sword model, All created of the course of 2023. Experimented with using Shape Keys and other more advanced rigs to make more complex sections of the humanoid rig.",
                     date: "January 2023 - October 2023 | Blender",
-                    link: ["uc1CA_6jRBE", "60WZZkM7Z2c"]
+                    link: ["https://youtube.com/embed/uc1CA_6jRBE", "https://youtube.com/embed/60WZZkM7Z2c"]
                   })}
                 >
                   <img src="/assets/images/crappy-old-kasu.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
@@ -216,9 +217,9 @@ export default function Portfolio() {
                   onClick={() => openModal({
                     image: ["/assets/images/DMT.png"],
                     title: "Dead Man's Tale (Destiny 2 Fan Animation)",
-                    description: "A redo of an animation I created in 2022. Worked on in one day. Mostly tweaking curves and adding a little more movement where needed. ",
+                    description: "A redo of an animation I created in 2022. Animated over the span of two days. ",
                     date: "May 2025 | Blender",
-                    link: ["9FSpX1YcTv0"]
+                    link: ["https://youtube.com/embed/9FSpX1YcTv0"]
                   })}
                 >
                   <img src="/assets/images/DMT.png" alt="Modeling project" className="w-full h-full object-cover"/>
@@ -243,7 +244,7 @@ export default function Portfolio() {
         <div className="mb-4 animate-slide-in-0.6s">
           <button
             onClick={() => toggleCategory('sketches')}
-            className="relative w-full px-6 py-20 text-left transition-colors flex justify-between items-center border-b border-white overflow-hidden"
+            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
             style={{
               backgroundImage: 'url(/assets/images/bg-notxt.png)',
               backgroundSize: 'cover',
@@ -292,54 +293,7 @@ export default function Portfolio() {
 
 
 
-        {/* Modal/Popup */}
-        {selectedItem && (
-          <div 
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-            onClick={closeModal}
-          >
-            <div className="relative max-w-7xl max-h-[90vh] overflow-y-auto bg-black/90 p-6">
-            <div 
-              className="relative max-w-7xl max-h-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={closeModal}
-                className="absolute -top-10 right-0 text-white text-4xl hover:text-gray-300 transition-colors"
-                aria-label="Close"
-              >
-                ×
-              </button>
-              
-              {selectedItem.title && <h3 className='text-2xl font-monoDisplay mb-2'>{selectedItem.title}</h3>}
-              {selectedItem.date && <h4 className='text-xl font-funnel mb-2'>{selectedItem.date}</h4>}
-              {selectedItem.description && <h3 className='text-gray-600 font-funnel'>{selectedItem.description}</h3>}
-              <div className="flex flex-col items-center justify-center">
-                {selectedItem.image.map((imageSrc, index) => (
-                  <img key={index} src={imageSrc} alt={`${selectedItem.title || 'Image'} ${index + 1}`} className="max-w-full mb-4 py-4 last:mb-0" />
-                ))}
-              </div>
-
-              {selectedItem.link && <div className="flex flex-col items-center justify-center">
-                {selectedItem.link.map((linksrc, index) => (
-                  <iframe
-                  className=" inset-0 w-full h-full"
-                  style={{ aspectRatio: '16/9' }}
-                  src={"https://www.youtube.com/embed/" + linksrc}
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-                ))}
-              </div>}
-
-
-            </div>
-            </div>
-            
-          </div>
-        )}
+        <MediaModal item={selectedItem} onClose={closeModal} />
       </main>
     </>
   )
