@@ -35,7 +35,7 @@ export default function MediaModal({ item, onClose }: MediaModalProps) {
           {item.title && <h3 className="text-2xl font-monoDisplay mb-2">{item.title}</h3>}
           {item.date && <h4 className="text-xl font-funnel mb-2">{item.date}</h4>}
           {item.description && (
-            <h3 className="text-gray-600 font-funnel whitespace-pre-line">{item.description}</h3>
+            <h3 className="text-gray-400 font-funnel whitespace-pre-line">{item.description}</h3>
           )}
 
           <div className="flex flex-col items-center justify-center">

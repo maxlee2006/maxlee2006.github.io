@@ -139,7 +139,21 @@ export default function Design() {
             <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
               {/* Easy to edit div objects */}
-
+              <div 
+                className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                onClick={() => openModal({
+                  image: ["/assets/images/long-march-full.png"],
+                  title: "The Long March Game Project",
+                  description: "I spent a semester working with a team of 5 on a custom C++ engine with OpenGL, meant to be used for a tower defense game. \n\nI had worked on making engines in the past, but not from such a baseic level. I learned a lot about engine flow as well as the more nitty-gritty parts of an engine's framework such as creating an editor and an entity factory system,  which were the two main features I worked on. I acted as the producer of the project as well, directing the team in daily standups and meetings, and making sure we were on track to finish the project. \n\nA big challenge for us initially was optimization, especially when rendering and running collision checks on hundreds of entities per frame. We were able to utilize batch rendering and collision lists to solve the issue, though we are actively working on finding more ways to optimize our engine. \n\nThe Long March is still in development and will be worked on through mid-2026.",
+                  date: "August 2025 - April 2026 | C++, OpenGL | Producer, Programmer",
+                  link: ["https://youtube.com/embed/DsthE9H6i4I"], 
+                })}
+              >
+                <h2 className="relative z-10 text-3xl font-semibold text-white">The Long March</h2>
+                <img src="/assets/images/long-march.png" alt="Modeling project" className="w-full h-full object-cover"/>
+                
+                <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+              </div>
 
 
 
