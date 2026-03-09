@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+
 import MediaModal from '../components/MediaModal'
 
 export default function Portfolio() {
@@ -90,8 +91,10 @@ export default function Portfolio() {
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
                 {/* Easy to edit div objects */}
+
+
                 <div 
-                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/gun-model.jpg"],
                     title: "PS-22 Tracer",
@@ -100,12 +103,21 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/gun-model.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+
+                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                    <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">PS-22 Tracer</h1>
+                  </div>
+                  
+
                 </div>
 
                 
                 <div 
-                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className=" group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/kasu-render.jpg", "/assets/images/kasu-LQ.jpg"],
                     title: "Kasu's Head",
@@ -114,12 +126,18 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/kasu-render.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                  <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Kasu's Head</h1>
+                  </div>
                 </div>
 
 
                 <div 
-                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/vicar-front.jpg", "/assets/images/vicar-back.jpg", "/assets/images/vicar-dark.jpg", "/assets/images/vicar-wip.jpg" ],
                     title: "VICAR Model",
@@ -128,12 +146,18 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/bg-notxt.png" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                  <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Vicar</h1>
+                  </div>
                 </div>
 
 
                 <div 
-                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/rifle-dark.jpg", "/assets/images/rifle-light.jpg",  "/assets/images/rifle-inspect.png"],
                     title: "LR-22 Reacher",
@@ -143,26 +167,38 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/rifle-dark.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                  <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">LR-22 Reacher</h1>
+                  </div>
                 </div>
 
 
 
                 <div 
-                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/kasu-old-render1.jpg", "/assets/images/kasu-old-render2.jpg", "/assets/images/kasu-old.jpg"],
                     title: "Kasu V1",
-                    description: "A model I originally made for an art exhibition, I eventually used in my parkour prototype in Unreal Engine 5. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
+                    description: "A model I made for an art exhibition in high school. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
                     date: "January 2024 - October 2024 | Blender"
                   })}
                 >
                   <img src="/assets/images/kasu-old-render1.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                  <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Kasu V1</h1>
+                  </div>
                 </div>
 
                 <div 
-                  className="relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
                     title: "Old Kasu",
@@ -172,7 +208,13 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/crappy-old-kasu.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0 bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                  <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Old Kasu</h1>
+                  </div>
                 </div>
 
 
@@ -213,7 +255,7 @@ export default function Portfolio() {
 
 
                 <div 
-                  className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="group relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => openModal({
                     image: ["/assets/images/DMT.png"],
                     title: "Dead Man's Tale (Destiny 2 Fan Animation)",
@@ -223,7 +265,13 @@ export default function Portfolio() {
                   })}
                 >
                   <img src="/assets/images/DMT.png" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
+                  <div className="absolute inset-0 bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
+                  <h1 className="text-white text-lg flex items-center justify-center 
+                  absolute inset-0 opacity-0 
+                  transition-all
+                   bg-black/60 
+                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Dead Man's Tale</h1>
+                  </div>
                 </div>
 
                
