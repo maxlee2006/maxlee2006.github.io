@@ -37,7 +37,7 @@ export default function Home() {
         
 
         
-            <div className="absolute inset-0 grid grid-cols-1 -z-0 md:grid-cols-4">
+            <div className="absolute inset-x-0 top-32 bottom-0 grid grid-cols-1 -z-0 md:grid-cols-4 md:inset-0 md:top-0">
                 <Link
                 style={{
                   backgroundImage: 'url(/assets/images/website.png)',
