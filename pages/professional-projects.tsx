@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import MediaModal from '../components/MediaModal'
 import GridItem from '../components/GridItem'
+import type { URL_link } from '../components/MediaModal'
+import { link } from 'fs'
 
 export default function Professional() {
   const [openProject, setOpenProject] = useState<string | null>(null)
@@ -34,11 +36,11 @@ export default function Professional() {
         {/* Static overlay */}
 
         <Link href="/"
-        className="fixed -left-28 top-4 md:top-0 h-16 md:h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
+        className="fixed left-0 lg:-left-[-2rem] top-4 focus:bg-white focus:mx-10 md:top-0 h-24 lg:h-full w-24 lg:w-30 bg-gray-200 z-50 flex items-center justify-center transition-all duration-200 ease-linear lg:hover:bg-white lg:hover:mx-5 "
         >
-          <div className="flex md:-rotate-90 md:left-[-120px]">
-          <h1 className="text-black text-2xl md:text-6xl font-funnel">
-          ^_BACK_^
+          <div className="flex lg:-rotate-90">
+          <h1 className="text-black text-2xl lg:text-6xl font-funnel">
+          BACK
           </h1>
           </div>
         </Link>
@@ -56,7 +58,7 @@ export default function Professional() {
         ></div>
 
 
-        <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">Professional Projects</h1>
+        <h1 className="text-4xl mb-8 py-10 animate-slide-in-0.5s">Professional Projects</h1>
 
         <div className="mb-4 animate-slide-in-0.6s">
           <button
@@ -90,6 +92,7 @@ export default function Professional() {
                     images: ["/assets/images/mn-web-2.png"],
                     description: "Refactored and enhanced search feature and artist pages.\n\nContributions:\n- 50% faster artist search endpoint using indexing and trigram search\n- Generated artist bios using OpenAI API\n- Wrote tests using Jest",
                     date: "May 2025 - July 2025 | Programmer",
+                    method: "TypeScript, HTML, CSS",
                     link: ["https://www.musicnerd.xyz/"]
                   }}
                 />
@@ -98,10 +101,12 @@ export default function Professional() {
                   onOpenModal={openModal}
                   data={{
                     image: "/assets/images/mn-ext.png",
-                    title: "Music Nerd Chrome Extension",
+                    title: "MN Chrome Extension",
                     images: ["/assets/images/mn-ext.png"],
-                    description: "Created, programmed, designed, and released a Chrome extension.\n\nContributions:\n- Designed UI\n- Pulled Music Nerd data from backend database \n\nDownload here: \nhttps://chromewebstore.google.com/detail/Music%20Nerd%20Chrome%20Extension/hoafengifajodeelbinmgbehghofjnmd?utm_source=ext_app_menu",
-                    date: "July 2025 - August 2025 | Programmer"
+                    description: "Created, programmed, designed, and released a Chrome extension.\n\nContributions:\n- Designed UI\n- Pulled Music Nerd data from backend database \n\nDownload here: \n",
+                    date: "July 2025 - August 2025 | Programmer",
+                    method: "TypeScript, HTML, CSS",
+                    URLs: [{link: "https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd", title:"Music Nerd Chrome Extension"}]
                   }}
                 />
               </div>

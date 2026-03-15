@@ -35,11 +35,11 @@ export default function Portfolio() {
         {/* Static overlay */}
 
         <Link href="/"
-        className="fixed -left-28 top-4 md:top-0 h-16 md:h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
+        className="fixed left-0 md:-left-[-2rem] top-4 focus:bg-white focus:mx-10 md:top-0 h-24 md:h-full w-24 md:w-30 bg-gray-200 z-50 flex items-center justify-center transition-all duration-200 ease-linear md:hover:bg-white md:hover:mx-5 "
         >
-          <div className="flex md:-rotate-90 md:left-[-120px]">
+          <div className="flex md:-rotate-90">
           <h1 className="text-black text-2xl md:text-6xl font-funnel">
-          ^_BACK_^
+          BACK
           </h1>
           </div>
         </Link>
@@ -101,7 +101,8 @@ export default function Portfolio() {
                     title: "PS-22 Tracer",
                     images: ["/assets/images/gun-model.jpg"],
                     description: "A small side project that I modeled, baked, and textured over the course of a week.",
-                    date: "September 2025 | Blender",
+                    date: "September 2025",
+                    method: "Blender",
                   }}
                 />
 
@@ -114,7 +115,8 @@ export default function Portfolio() {
                     title: "Kasu's Head",
                     images: ["/assets/images/kasu-render.jpg", "/assets/images/kasu-LQ.jpg"],
                     description: "A sculpt I made for use in a larger character model I'm working on. Modeled, Baked, Retopologized, and textured over the course of two weeks.",
-                    date: "November 2025 | Blender",
+                    date: "November 2025",
+                    method: "Blender",
                   }}
                 />
 
@@ -126,7 +128,8 @@ export default function Portfolio() {
                     title: "VICAR Model",
                     images: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/vicar-front.jpg", "/assets/images/vicar-back.jpg", "/assets/images/vicar-dark.jpg", "/assets/images/vicar-wip.jpg"],
                     description: "A model I created for use in Unreal Engine 5. I worked on this on and off for around 6 months while attending my freshman year of college. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
-                    date: "December 2024 - June 2025 | Blender"
+                    date: "December 2024 - June 2025",
+                    method: "Blender"
                   }}
                 />
 
@@ -138,7 +141,8 @@ export default function Portfolio() {
                     title: "LR-22 Reacher",
                     images: ["/assets/images/rifle-dark.jpg", "/assets/images/rifle-light.jpg", "/assets/images/rifle-inspect.png"],
                     description: "A weapon model I created for use in a Parkour Prototype in Unreal Engine 5. Worked on as a high school project. Modeled, Textured, Retopologized, Baked, and Rigged in 2 months during late 2023, and animated in March of 2024.",
-                    date: "October 2023 - November 2023, March 2024 | Blender",
+                    date: "October 2023 - November 2023, March 2024",
+                    method: "Blender",
                     link: ["https://youtube.com/embed/9wCl1X0lJO8"]
                   }}
                 />
@@ -152,7 +156,8 @@ export default function Portfolio() {
                     title: "Kasu V1",
                     images: ["/assets/images/kasu-old-render1.jpg", "/assets/images/kasu-old-render2.jpg", "/assets/images/kasu-old.jpg"],
                     description: "A model I made for an art exhibition in high school. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
-                    date: "January 2024 - October 2024 | Blender"
+                    date: "January 2024 - October 2024",
+                    method: "Blender",
                   }}
                 />
 
@@ -163,7 +168,8 @@ export default function Portfolio() {
                     title: "Old Kasu",
                     images: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
                     description: "An early version of the parkour animation set I ended up using in my Parkour Prototype. Uses an Unfinished humanoid rig, gun rig, and sword model, All created of the course of 2023. Experimented with using Shape Keys and other more advanced rigs to make more complex sections of the humanoid rig.",
-                    date: "January 2023 - October 2023 | Blender",
+                    date: "January 2023 - October 2023",
+                    method: "Blender",
                     link: ["https://youtube.com/embed/uc1CA_6jRBE", "https://youtube.com/embed/60WZZkM7Z2c"]
                   }}
                 />
@@ -212,7 +218,8 @@ export default function Portfolio() {
                     title: "Dead Man's Tale",
                     images: ["/assets/images/DMT.png"],
                     description: "A redo of an animation I created in 2022. Animated over the span of two days. ",
-                    date: "May 2025 | Blender",
+                    date: "May 2025",
+                    method: "Blender",
                     link: ["https://youtube.com/embed/9FSpX1YcTv0"]
                   }}
                 />

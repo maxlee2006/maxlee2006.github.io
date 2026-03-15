@@ -35,11 +35,11 @@ export default function Design() {
         {/* Static overlay */}
 
         <Link href="/"
-        className="fixed -left-28 top-4 md:top-0 h-16 md:h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
+        className="fixed left-0 md:-left-[-2rem] top-4 focus:bg-white focus:mx-10 md:top-0 h-24 md:h-full w-24 md:w-30 bg-gray-200 z-50 flex items-center justify-center transition-all duration-200 ease-linear md:hover:bg-white md:hover:mx-5 "
         >
-          <div className="flex md:-rotate-90 md:left-[-120px]">
+          <div className="flex md:-rotate-90">
           <h1 className="text-black text-2xl md:text-6xl font-funnel">
-          ^_BACK_^
+          BACK
           </h1>
           </div>
         </Link>
@@ -145,7 +145,8 @@ export default function Design() {
                   title: "The Long March Game Project",
                   images: ["/assets/images/long-march-full.png"],
                   description: "I spent a semester working with a team of 5 on a custom C++ engine with OpenGL, meant to be used for a tower defense game. \n\nI had worked on making engines in the past, but not from such a baseic level. I learned a lot about engine flow as well as the more nitty-gritty parts of an engine's framework such as creating an editor and an entity factory system,  which were the two main features I worked on. I acted as the producer of the project as well, directing the team in daily standups and meetings, and making sure we were on track to finish the project. \n\nA big challenge for us initially was optimization, especially when rendering and running collision checks on hundreds of entities per frame. We were able to utilize batch rendering and collision lists to solve the issue, though we are actively working on finding more ways to optimize our engine. \n\nThe Long March is still in development and will be worked on through mid-2026.",
-                  date: "August 2025 - April 2026 | C++, OpenGL | Producer, Programmer",
+                  date: "August 2025 - April 2026 | Producer, Programmer",
+                  method: "C++, OpenGL",
                   link: ["https://youtube.com/embed/DsthE9H6i4I"]
                 }}
               />
@@ -161,7 +162,8 @@ export default function Design() {
                   title: "EVERGREEN",
                   images: ["/assets/images/evergreen-menu.png", "/assets/images/evergreen.png", "/assets/images/evergreen-puzzle.png"],
                   description: "I spent a semester working with a team of 5 on a 2.5D horror game using a custom C engine and an in-house graphics API. I learned the basics of an engine's framework, as well as some common best practices when it comes to handling and renderimg large amounts of entities. Though on a short development cycle, This was a great experience in getting used to team responsibilities and production workflows.",
-                  date: "January 2025 - April 2025 | C | Producer, Programmer"
+                  date: "January 2025 - April 2025 | Producer, Programmer",
+                  method: "C",
                 }}
               />
 
