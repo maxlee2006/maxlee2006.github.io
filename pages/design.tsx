@@ -114,68 +114,7 @@ export default function Design() {
 {/*-------------------------------------------------------------------------------------*/}
 
 
-        {/* Custom Engine Category */}
-        <div 
-        className="mb-4 animate-slide-in-0.6s">
-          
-          <button
-            onClick={() => toggleCategory('custom engines')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/evergreen.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Custom Engines</h2>
-            <span className="relative z-10 text-2xl text-white">
-              {openCategory === 'custom engines' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openCategory === 'custom engines' && (
-            <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-              {/* Easy to edit div objects */}
-              <GridItem 
-                onOpenModal={openModal}
-                data={{
-                  image: "/assets/images/long-march.png",
-                  title: "The Long March Game Project",
-                  images: ["/assets/images/long-march-full.png"],
-                  description: "I spent a semester working with a team of 5 on a custom C++ engine with OpenGL, meant to be used for a tower defense game. \n\nI had worked on making engines in the past, but not from such a baseic level. I learned a lot about engine flow as well as the more nitty-gritty parts of an engine's framework such as creating an editor and an entity factory system,  which were the two main features I worked on. I acted as the producer of the project as well, directing the team in daily standups and meetings, and making sure we were on track to finish the project. \n\nA big challenge for us initially was optimization, especially when rendering and running collision checks on hundreds of entities per frame. We were able to utilize batch rendering and collision lists to solve the issue, though we are actively working on finding more ways to optimize our engine. \n\nThe Long March is still in development and will be worked on through mid-2026.",
-                  date: "August 2025 - April 2026 | Producer, Programmer",
-                  method: "C++, OpenGL",
-                  link: ["https://youtube.com/embed/DsthE9H6i4I"]
-                }}
-              />
 
-
-
-
-
-              <GridItem 
-                onOpenModal={openModal}
-                data={{
-                  image: "/assets/images/evergreen.png",
-                  title: "EVERGREEN",
-                  images: ["/assets/images/evergreen-menu.png", "/assets/images/evergreen.png", "/assets/images/evergreen-puzzle.png"],
-                  description: "I spent a semester working with a team of 5 on a 2.5D horror game using a custom C engine and an in-house graphics API. I learned the basics of an engine's framework, as well as some common best practices when it comes to handling and renderimg large amounts of entities. Though on a short development cycle, This was a great experience in getting used to team responsibilities and production workflows.",
-                  date: "January 2025 - April 2025 | Producer, Programmer",
-                  method: "C",
-                }}
-              />
-
-             
-
-              {/* Add more grid items as needed */}
-              
-
-            </div>
-          </div>
-          )}
-        </div>
 
         {/* Contact Section */}
         <div className="mt-8 pt-8 border-t border-gray-700">
