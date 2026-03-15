@@ -30,7 +30,7 @@ export default function Portfolio() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="max-w-5xl mx-auto px-5">
+      <main className="max-w-5xl mx-auto px-5 pt-20 md:pt-5">
         
         {/* Static overlay */}
 
