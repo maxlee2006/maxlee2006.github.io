@@ -31,13 +31,45 @@ export default function Home() {
 
                 <div className="max-w-5xl space-y-4 text-left">
                 <h1 className="text-7xl p-0 font-funnel animate-slide-in-0.5s font-semibold  text-black">Max Lee</h1>
-                <h1 className="text-2xl animate-slide-in-0.7s font-semibold text-black">Developer, Artist </h1>
+                <h1 className="text-2xl animate-slide-in-0.7s font-semibold text-black">Developer, Designer, Artist </h1>
+                </div>
+
+                <div className=" animate-slide-in-0.7s flex items-center justify-center space-x-4 p-8 absolute top-0 right-0">
+                  <Link 
+                  style={{
+                  backgroundImage: 'url(assets/images/GitHub_Invertocat_Black_Clearspace.png)',
+                  backgroundPosition: 'center',  // center it
+                }}
+                className='block w-24 h-24 bg-center bg-no-repeat bg-contain transition-all hover:opacity-50'
+                href="https://github.com/maxlee2006">
+                  
+                  </Link>
+
+                  <Link 
+                  style={{
+                  backgroundImage: 'url(assets/images/InBug-Black.png)',
+                  backgroundPosition: 'center',  // center it
+                }}
+                className='block w-20 h-24 bg-center bg-no-repeat bg-contain transition-all hover:opacity-50'
+                href="https://www.linkedin.com/in/max-lee2006/">
+                  
+                  </Link>
+
+                  <Link 
+                  style={{
+                  backgroundPosition: 'center',  // center it
+                }}
+                className='flex items-center justify-center text-black text-2xl transition-all hover:text-black/50'
+                href="assets\Docs\Max Lee Resume 2025 Reformatted.pdf">
+                  Resume
+                  </Link>
+
                 </div>
             </div>
         
 
         
-            <div className="absolute inset-x-0 top-32 bottom-0 grid grid-cols-1 -z-0 md:grid-cols-4 md:inset-0 md:top-0">
+            <div className="absolute inset-0 grid grid-cols-1 -z-0 md:grid-cols-4">
                 <Link
                 style={{
                   backgroundImage: 'url(/assets/images/website.png)',
@@ -50,9 +82,9 @@ export default function Home() {
                     <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
-                        <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work</p>
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work and Code Samples</p>
                         <h2 className="text-3xl font-semibold text-white">Code</h2>
-                        <p className="mt-2 text-gray-400">Production experience, shipped projects, and team work</p>
+                        <p className="mt-2 text-gray-400">Production experience and shipped projects</p>
                     </div>
                     
                 </Link>
@@ -93,12 +125,14 @@ export default function Home() {
                 <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
-                        <p className="text-sm uppercase tracking-wide text-gray-300">Engine building and In-Engine work</p>
-                        <h2 className="text-3xl font-semibold text-white">Games</h2>
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Game Design and Implementation</p>
+                        <h2 className="text-3xl font-semibold text-white">Design</h2>
                         <p className="mt-2 text-gray-400">Unreal Engine and custom engines</p>   
                     </div>
                 </Link>
+                
 
+                
 
             </div>
 
