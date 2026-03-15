@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
 import MediaModal from '../components/MediaModal'
+import GridItem from '../components/GridItem'
 
 export default function Professional() {
   const [openProject, setOpenProject] = useState<string | null>(null)
@@ -33,10 +34,10 @@ export default function Professional() {
         {/* Static overlay */}
 
         <Link href="/"
-        className="fixed -left-28 top-0 h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
+        className="fixed -left-28 top-4 md:top-0 h-16 md:h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
         >
           <div className="-rotate-90 flex  left-[-120px]">
-          <h1 className="text-black text-6xl font-funnel">
+          <h1 className="text-black text-6xl md:text-6xl text-2xl font-funnel">
           ^_BACK_^
           </h1>
           </div>
@@ -81,34 +82,28 @@ export default function Professional() {
           {openProject === 'music-nerd' && (
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                <div 
-                  className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/mn-web-2.png"],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/mn-web-2.png",
                     title: "Music Nerd Website",
+                    images: ["/assets/images/mn-web-2.png"],
                     description: "Refactored and enhanced search feature and artist pages.\n\nContributions:\n- 50% faster artist search endpoint using indexing and trigram search\n- Generated artist bios using OpenAI API\n- Wrote tests using Jest",
                     date: "May 2025 - July 2025 | Programmer",
                     link: ["https://www.musicnerd.xyz/"]
-                  })}
-                >
-                  <h2 className="relative z-10 text-3xl font-semibold text-white">Website</h2>
-                  <img src="/assets/images/mn-web-2.png" alt="Music Nerd Website" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
-                </div>
+                  }}
+                />
 
-                <div 
-                  className="relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/mn-ext.png"],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/mn-ext.png",
                     title: "Music Nerd Chrome Extension",
+                    images: ["/assets/images/mn-ext.png"],
                     description: "Created, programmed, designed, and released a Chrome extension.\n\nContributions:\n- Designed UI\n- Pulled Music Nerd data from backend database \n\nDownload here: \nhttps://chromewebstore.google.com/detail/Music%20Nerd%20Chrome%20Extension/hoafengifajodeelbinmgbehghofjnmd?utm_source=ext_app_menu",
-                    date: "July 2025 - August 2025 | Programmer",
-                  })}
-                >
-                  <h2 className="relative z-10 text-3xl font-semibold text-white">Chrome Extension</h2>
-                  <img src="/assets/images/mn-ext.png" alt="Music Nerd Extension" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/10 duration-200 ease-linear"></div>
-                </div>
+                    date: "July 2025 - August 2025 | Programmer"
+                  }}
+                />
               </div>
             </div>
           )}

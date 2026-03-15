@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
 import MediaModal from '../components/MediaModal'
+import GridItem from '@/components/GridItem'
 
 export default function Portfolio() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
@@ -34,10 +35,10 @@ export default function Portfolio() {
         {/* Static overlay */}
 
         <Link href="/"
-        className="fixed -left-28 top-0 h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
+        className="fixed -left-28 top-4 md:top-0 h-16 md:h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
         >
           <div className="-rotate-90 flex  left-[-120px]">
-          <h1 className="text-black text-6xl font-funnel">
+          <h1 className="text-black text-6xl md:text-6xl text-2xl font-funnel">
           ^_BACK_^
           </h1>
           </div>
@@ -81,7 +82,7 @@ export default function Portfolio() {
           >
             <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
             
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Projects</h2>
+            <h2 className="relative z-10 text-3xl font-semibold text-white">Modeling</h2>
             <span className=" relative z-10 text-2xl text-white">
               {openCategory === 'modeling' ? '−' : '+'}
             </span>
@@ -93,129 +94,79 @@ export default function Portfolio() {
                 {/* Easy to edit div objects */}
 
 
-                <div 
-                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/gun-model.jpg"],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/gun-model.jpg",
                     title: "PS-22 Tracer",
+                    images: ["/assets/images/gun-model.jpg"],
                     description: "A small side project that I modeled, baked, and textured over the course of a week.",
-                    date: "September 2025 | Blender"
-                  })}
-                >
-                  <img src="/assets/images/gun-model.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-
-                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                    <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">PS-22 Tracer</h1>
-                  </div>
-                  
-
-                </div>
+                    date: "September 2025 | Blender",
+                  }}
+                />
 
                 
-                <div 
-                  className=" group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/kasu-render.jpg", "/assets/images/kasu-LQ.jpg"],
+
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/kasu-render.jpg",
                     title: "Kasu's Head",
+                    images: ["/assets/images/kasu-render.jpg", "/assets/images/kasu-LQ.jpg"],
                     description: "A sculpt I made for use in a larger character model I'm working on. Modeled, Baked, Retopologized, and textured over the course of two weeks.",
-                    date: "November 2025 | Blender"
-                  })}
-                >
-                  <img src="/assets/images/kasu-render.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                  <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Kasu's Head</h1>
-                  </div>
-                </div>
+                    date: "November 2025 | Blender",
+                  }}
+                />
 
 
-                <div 
-                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/vicar-front.jpg", "/assets/images/vicar-back.jpg", "/assets/images/vicar-dark.jpg", "/assets/images/vicar-wip.jpg" ],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/bg-notxt.png",
                     title: "VICAR Model",
+                    images: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/vicar-front.jpg", "/assets/images/vicar-back.jpg", "/assets/images/vicar-dark.jpg", "/assets/images/vicar-wip.jpg"],
                     description: "A model I created for use in Unreal Engine 5. I worked on this on and off for around 6 months while attending my freshman year of college. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
                     date: "December 2024 - June 2025 | Blender"
-                  })}
-                >
-                  <img src="/assets/images/bg-notxt.png" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                  <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Vicar</h1>
-                  </div>
-                </div>
+                  }}
+                />
 
 
-                <div 
-                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/rifle-dark.jpg", "/assets/images/rifle-light.jpg",  "/assets/images/rifle-inspect.png"],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/rifle-dark.jpg",
                     title: "LR-22 Reacher",
+                    images: ["/assets/images/rifle-dark.jpg", "/assets/images/rifle-light.jpg", "/assets/images/rifle-inspect.png"],
                     description: "A weapon model I created for use in a Parkour Prototype in Unreal Engine 5. Worked on as a high school project. Modeled, Textured, Retopologized, Baked, and Rigged in 2 months during late 2023, and animated in March of 2024.",
                     date: "October 2023 - November 2023, March 2024 | Blender",
                     link: ["https://youtube.com/embed/9wCl1X0lJO8"]
-                  })}
-                >
-                  <img src="/assets/images/rifle-dark.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                  <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">LR-22 Reacher</h1>
-                  </div>
-                </div>
+                  }}
+                />
 
 
 
-                <div 
-                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/kasu-old-render1.jpg", "/assets/images/kasu-old-render2.jpg", "/assets/images/kasu-old.jpg"],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/kasu-old-render1.jpg",
                     title: "Kasu V1",
+                    images: ["/assets/images/kasu-old-render1.jpg", "/assets/images/kasu-old-render2.jpg", "/assets/images/kasu-old.jpg"],
                     description: "A model I made for an art exhibition in high school. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
                     date: "January 2024 - October 2024 | Blender"
-                  })}
-                >
-                  <img src="/assets/images/kasu-old-render1.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0  bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                  <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Kasu V1</h1>
-                  </div>
-                </div>
+                  }}
+                />
 
-                <div 
-                  className="group relative overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/crappy-old-kasu.jpg",
                     title: "Old Kasu",
+                    images: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
                     description: "An early version of the parkour animation set I ended up using in my Parkour Prototype. Uses an Unfinished humanoid rig, gun rig, and sword model, All created of the course of 2023. Experimented with using Shape Keys and other more advanced rigs to make more complex sections of the humanoid rig.",
                     date: "January 2023 - October 2023 | Blender",
                     link: ["https://youtube.com/embed/uc1CA_6jRBE", "https://youtube.com/embed/60WZZkM7Z2c"]
-                  })}
-                >
-                  <img src="/assets/images/crappy-old-kasu.jpg" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                  <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Old Kasu</h1>
-                  </div>
-                </div>
+                  }}
+                />
 
 
                 {/* Add more grid items as needed */}
@@ -254,25 +205,17 @@ export default function Portfolio() {
                 {/* Easy to edit div objects */}
 
 
-                <div 
-                  className="group relative overflow-hidden aspect-video bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => openModal({
-                    image: ["/assets/images/DMT.png"],
-                    title: "Dead Man's Tale (Destiny 2 Fan Animation)",
+                <GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/DMT.png",
+                    title: "Dead Man's Tale",
+                    images: ["/assets/images/DMT.png"],
                     description: "A redo of an animation I created in 2022. Animated over the span of two days. ",
                     date: "May 2025 | Blender",
                     link: ["https://youtube.com/embed/9FSpX1YcTv0"]
-                  })}
-                >
-                  <img src="/assets/images/DMT.png" alt="Modeling project" className="w-full h-full object-cover"/>
-                  <div className="absolute inset-0 bg-black/10 transition-colors hover:bg-black/60 duration-200 ease-linear">
-                  <h1 className="text-white text-lg flex items-center justify-center 
-                  absolute inset-0 opacity-0 
-                  transition-all
-                   bg-black/60 
-                  group-hover:opacity-100 hover:bg-black/10 duration-200 ease-linear">Dead Man's Tale</h1>
-                  </div>
-                </div>
+                  }}
+                />
 
                
 
