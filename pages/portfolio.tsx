@@ -224,6 +224,19 @@ export default function Portfolio() {
                   }}
                 />
 
+<GridItem 
+                  onOpenModal={openModal}
+                  data={{
+                    image: "/assets/images/Ringing-Nail.png",
+                    title: "The Ringing Nail",
+                    images: ["/assets/images/Ringing-Nail.png"],
+                    description: "A fan animation of The Ringing Nail from Destiny 2. Created over the course of 2 days.",
+                    date: "Febuary 2023",
+                    method: "Blender",
+                    link: ["https://youtube.com/embed/RzHxhlIiMiE"]
+                  }}
+                />
+
                
 
                 {/* Add more grid items as needed */}
