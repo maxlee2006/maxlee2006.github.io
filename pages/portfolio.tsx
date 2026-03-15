@@ -37,8 +37,8 @@ export default function Portfolio() {
         <Link href="/"
         className="fixed -left-28 top-4 md:top-0 h-16 md:h-full w-30 bg-gray-200 z-50 flex items-center justify-center transition-all hover:bg-white hover:ml-10 hover:w-30 duration-200 ease-linear"
         >
-          <div className="-rotate-90 flex  left-[-120px]">
-          <h1 className="text-black text-6xl md:text-6xl text-2xl font-funnel">
+          <div className="flex md:-rotate-90 md:left-[-120px]">
+          <h1 className="text-black text-2xl md:text-6xl font-funnel">
           ^_BACK_^
           </h1>
           </div>
