@@ -99,7 +99,7 @@ export default function Portfolio() {
                   data={{
                     image: "/assets/images/gun-model.jpg",
                     title: "PS-22 Tracer",
-                    images: ["/assets/images/gun-model.jpg"],
+                    images: ["/assets/images/gun-model.jpg", "/assets/images/pistol_side.png"],
                     description: "A small side project that I modeled, baked, and textured over the course of a week.",
                     date: "September 2025",
                     method: "Blender",
@@ -113,7 +113,7 @@ export default function Portfolio() {
                   data={{
                     image: "/assets/images/kasu-render.jpg",
                     title: "Kasu's Head",
-                    images: ["/assets/images/kasu-render.jpg", "/assets/images/kasu-LQ.jpg"],
+                    images: ["/assets/images/kasu-close.png", "/assets/images/kasu-render.jpg"],
                     description: "A sculpt I made for use in a larger character model I'm working on. Modeled, Baked, Retopologized, and textured over the course of two weeks.",
                     date: "November 2025",
                     method: "Blender",
@@ -126,7 +126,7 @@ export default function Portfolio() {
                   data={{
                     image: "/assets/images/bg-notxt.png",
                     title: "VICAR Model",
-                    images: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/vicar-front.jpg", "/assets/images/vicar-back.jpg", "/assets/images/vicar-dark.jpg", "/assets/images/vicar-wip.jpg"],
+                    images: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/Vicar.gif"],
                     description: "A model I created for use in Unreal Engine 5. I worked on this on and off for around 6 months while attending my freshman year of college. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
                     date: "December 2024 - June 2025",
                     method: "Blender"
@@ -137,9 +137,9 @@ export default function Portfolio() {
                 <GridItem 
                   onOpenModal={openModal}
                   data={{
-                    image: "/assets/images/rifle-dark.jpg",
+                    image: "/assets/images/LR_dark.png",
                     title: "LR-22 Reacher",
-                    images: ["/assets/images/rifle-dark.jpg", "/assets/images/rifle-light.jpg", "/assets/images/rifle-inspect.png"],
+                    images: ["/assets/images/LR_dark.png", "/assets/images/LR_side.png", "/assets/images/LR_table.png", "/assets/images/rifle-inspect.png"],
                     description: "A weapon model I created for use in a Parkour Prototype in Unreal Engine 5. Worked on as a high school project. Modeled, Textured, Retopologized, Baked, and Rigged in 2 months during late 2023, and animated in March of 2024.",
                     date: "October 2023 - November 2023, March 2024",
                     method: "Blender",
