@@ -92,13 +92,13 @@ export default function Professional() {
               <GridItem 
                 onOpenModal={openModal}
                 data={{
-                  image: "/assets/images/long-march.png",
+                  image: "/assets/images/LongMarch_title.png",
                   title: "The Long March Game Project",
-                  images: ["/assets/images/long-march-full.png"],
-                  description: "I spent a semester working with a team of 5 on a custom C++ engine with OpenGL, meant to be used for a tower defense game. \n\nI had worked on making engines in the past, but not from such a basic level. I learned a lot about engine flow as well as the more nitty-gritty parts of an engine's framework such as creating an editor and an entity factory system,  which were the two main features I worked on. I acted as the producer of the project as well, directing the team in daily standups and meetings, and making sure we were on track to finish the project. \n\nA big challenge for us initially was optimization, especially when rendering and running collision checks on hundreds of entities per frame. We were able to utilize batch rendering and collision lists to solve the issue, though we are actively working on finding more ways to optimize our engine. \n\nThe Long March is still in development and will be worked on through mid-2026.",
-                  date: "August 2025 - April 2026 | Producer, Programmer",
+                  images: ["/assets/images/LongMarch_3.jpg", "/assets/images/LongMarch_1.jpg", "/assets/images/LongMarch_2.jpg"],
+                  description: "I spent two semesters working with a team of 5 on a tower defense game created using a custom C++ engine with OpenGL. \n\nI had worked on making engines in the past, but not from such a basic level. I learned a lot about engine flow as well as the more nitty-gritty parts of an engine's framework such as creating an editor and an entity factory system,  which were the two main features I worked on. I acted as the producer of the project as well, directing the team in daily standups and meetings, and making sure we were on track to finish the project. \n\nA big challenge for us initially was optimization, especially when rendering and running collision checks on hundreds of entities per frame. We were able to utilize batch rendering and collision lists to solve the issue, though we are actively working on finding more ways to optimize our engine. \n\nThe Long March is still in development and will be worked on through mid-2026.",
+                  date: "August 2025 - June 2026 | Producer, Programmer",
                   method: "C++, OpenGL",
-                  link: ["https://youtube.com/embed/DsthE9H6i4I"]
+                  link: ["https://youtube.com/embed/AMdFc6ZKX-g"]
                 }}
               />
 
