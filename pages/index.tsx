@@ -132,7 +132,7 @@ export default function Home() {
             <div className="relative grid w-full justify-center flex-1 grid-cols-1 -z-0 md:grid-cols-3 min-h-[80rem] gap-4 px-4">
                 <Link
                 style={{
-                  backgroundImage: 'url(/assets/images/website.png)',
+                  backgroundImage: 'url(/assets/images/Vertical_Capsule_748_896.png)',
                   backgroundSize: 'cover',      // make it cover the whole area
                   backgroundPosition: 'center',  // center it
                 }}
@@ -142,7 +142,7 @@ export default function Home() {
                     <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
-                        <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work and Code Samples</p>
+                        <p className="text-sm uppercase tracking-wide text-gray-300">Coding Projects</p>
                         <h2 className="text-4xl font-semibold text-white">Code</h2>
                         <p className="mt-2 text-gray-400">Production experience and shipped projects</p>
                     </div>
