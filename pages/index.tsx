@@ -109,7 +109,7 @@ export default function Home() {
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
-                className="group relative z-10 flex w-full min-h-[12rem] md:min-h-[40rem] flex-col justify-end bg-black/20 px-6 py-10 text-left text-white gap-4 transition hover:bg-white/10"
+                className="group relative z-10 flex w-full min-h-[12rem] md:min-h-[40rem] flex-col justify-end bg-black/20 px-6 py-10 text-right text-white gap-4 transition hover:bg-white/10"
             >
                 <div className="absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
