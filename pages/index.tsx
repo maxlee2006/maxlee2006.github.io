@@ -15,8 +15,8 @@ export default function Home() {
 
 
 
-      <main className="relative flex min-h-screen flex-col items-start justify-start overflow-hidden ">
-            <div className="relative z-10 border-y w-full border border-gray-700 bg-white p-4">
+      <main className="relative flex min-h-screen flex-col items-start justify-start">
+            <header className="sticky top-0 z-50 w-full border-y border border-gray-700 bg-white p-2">
                 <div
                 className="absolute inset-0 -z-10 opacity-40"
                 style={{
@@ -98,11 +98,38 @@ export default function Home() {
                   </Link>
 
                 </div>
-            </div>
-        
+            </header>
+              
+            
 
-        
-            <div className="absolute inset-x-0 top-40 bottom-0 grid grid-cols-1 -z-0 md:grid-cols-4 md:inset-0 md:top-0">
+            <Link
+                href="/LongMarch"
+                style={{
+                  backgroundImage: 'url(/assets/images/Library_Hero_BIG.png)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+                className="group relative z-10 flex w-full min-h-[12rem] md:min-h-[40rem] flex-col justify-end bg-black/20 px-6 py-10 text-left text-white gap-4 transition hover:bg-white/10"
+            >
+                <div className="absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
+
+                <div className="relative z-10">
+                    <p className="text-xl uppercase tracking-wide text-gray-300">Featured Project</p>
+                    <h1 className="text-3xl md:text-5xl font-semibold text-white">The Long March</h1>
+                    <p className="mt-2 text-gray-400">Tower Defense in Custom C++ / OpenGL engine — producer and programmer</p>
+                </div>
+            </Link>
+            
+
+            {/*Gap in between featured project and other sections*/}
+            <div className="relative z-10 justify-end w-full  bg-black p-10"> 
+              <h1 className="text-3xl md:text-5xl font-semibold text-white">Portfolio</h1>
+              <p className="text-l  tracking-wide text-gray-400">Personal, Academic, and Professional works</p>
+            </div>
+
+
+
+            <div className="relative grid w-full justify-center flex-1 grid-cols-1 -z-0 md:grid-cols-3 min-h-[80rem] gap-4 px-4">
                 <Link
                 style={{
                   backgroundImage: 'url(/assets/images/website.png)',
@@ -110,13 +137,13 @@ export default function Home() {
                   backgroundPosition: 'center',  // center it
                 }}
                 href="/professional-projects"
-                className="group relative flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                className="group relative flex flex-1 flex-col justify-center bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
                 >
                     <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Shipped Work and Code Samples</p>
-                        <h2 className="text-3xl font-semibold text-white">Code</h2>
+                        <h2 className="text-4xl font-semibold text-white">Code</h2>
                         <p className="mt-2 text-gray-400">Production experience and shipped projects</p>
                     </div>
                     
@@ -130,14 +157,14 @@ export default function Home() {
                     backgroundPosition: 'center',  // center it
                   }}
                 href="/portfolio"
-                className="group relative flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                className="group relative flex flex-1 flex-col justify-center bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
                 >                    
                 
                 <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Art Projects</p>
-                        <h2 className="text-3xl font-semibold text-white">Art</h2>
+                        <h2 className="text-4xl font-semibold text-white">Art</h2>
                         <p className="mt-2 text-gray-400">Blender projects, animations, and sketches</p>   
                     </div>
                 </Link>
@@ -152,14 +179,14 @@ export default function Home() {
                   onMouseEnter={e => e.currentTarget.style.backgroundImage = "url('/assets/images/UE5.gif')"}
                   onMouseLeave={e => e.currentTarget.style.backgroundImage = "url('/assets/images/ue-still.png')" }
                 href="/design"
-                className="group relative flex flex-1 flex-col justify-end bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
+                className="group relative flex flex-1 flex-col justify-center bg-black/20 px-6 py-10 text-left text-white transition hover:bg-white/10"
                 >                    
                 
                 <div className=" absolute inset-0 bg-black/80 transition-colors group-hover:bg-black/50 duration-200 ease-linear"></div>
 
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Game Design and Implementation</p>
-                        <h2 className="text-3xl font-semibold text-white">Design</h2>
+                        <h2 className="text-4xl font-semibold text-white">Design</h2>
                         <p className="mt-2 text-gray-400">Unreal Engine and custom engines</p>   
                     </div>
                 </Link>
@@ -169,7 +196,8 @@ export default function Home() {
 
             </div>
 
-
+            <div className="relative z-10  w-full  bg-black p-20"> 
+            </div>
 
 
       </main>

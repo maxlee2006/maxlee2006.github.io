@@ -89,19 +89,41 @@ export default function Professional() {
 
               
               {/* Easy to edit div objects */}
-              <GridItem 
-                onOpenModal={openModal}
-                data={{
-                  image: "/assets/images/LongMarch_title.png",
-                  title: "The Long March Game Project",
-                  images: ["/assets/images/LongMarch_3.jpg", "/assets/images/LongMarch_1.jpg", "/assets/images/LongMarch_2.jpg"],
-                  description: "I spent two semesters working with a team of 5 on a tower defense game created using a custom C++ engine with OpenGL. \n\nI had worked on making engines in the past, but not from such a basic level. I learned a lot about engine flow as well as the more nitty-gritty parts of an engine's framework such as creating an editor and an entity factory system,  which were the two main features I worked on. I acted as the producer of the project as well, directing the team in daily standups and meetings, and making sure we were on track to finish the project. \n\nA big challenge for us initially was optimization, especially when rendering and running collision checks on hundreds of entities per frame. We were able to utilize batch rendering and collision lists to solve the issue, though we are actively working on finding more ways to optimize our engine. \n\nThe Long March is still in development and will be worked on through mid-2026.",
-                  date: "August 2025 - June 2026 | Producer, Programmer",
-                  method: "C++, OpenGL",
-                  link: ["https://youtube.com/embed/AMdFc6ZKX-g"]
-                }}
-              />
+              <Link
+                  href="/LongMarch"
+                  className="group relative block overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                  <img
+                      src="/assets/images/Vertical_Capsule_748_896.png"
+                      alt="Long March"
+                      className="block w-full h-full object-cover"
+                  />
 
+                  <div className="absolute inset-0 bg-black/10 transition-colors lg:hover:bg-black/60 duration-200 ease-linear">
+                      <div className="
+                          absolute inset-0 flex flex-col items-center justify-center
+                          opacity-100 lg:opacity-0
+                          bg-black/60
+                          transition-all duration-300 ease-in-out
+                          active:opacity-0
+                          lg:group-hover:opacity-100
+                      ">
+                          <h1 className="text-white text-center text-lg">
+                              Long March
+                          </h1>
+                          <p className="text-white text-center text-sm">
+                              September 2025 - August 2026
+                          </p>
+                          <p className="text-white text-center text-sm">
+                              C++ | OpenGL
+                          </p>
+                          <p className="text-white text-center text-xs">
+                              - view -
+                          </p>
+                      </div>
+                  </div>
+            </Link>
+                  
 
 
 
