@@ -70,7 +70,7 @@ export default function Professional() {
             onClick={() => toggleProject('custom engines')}
             className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
             style={{
-              backgroundImage: 'url(/assets/images/evergreen.png)',
+              backgroundImage: 'url(/assets/images/Screenshot_02.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
