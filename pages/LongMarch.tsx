@@ -11,7 +11,7 @@ export default function LongMarch() {
   return (
     <>
       <Head>
-        <title>The Long March - Max Lee</title>
+        <title>Long March</title>
         <meta name="description" content="The Long March game project by Max Lee" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -40,21 +40,28 @@ export default function LongMarch() {
             }}
         ></div>
 
-        <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">The Long March</h1>
-
         <div
           className="relative w-full h-60 md:h-80 mb-8 overflow-hidden border-b border-white animate-slide-in-0.6s"
           style={{
-            backgroundImage: 'url(/assets/images/Library_Hero_BIG.png)',
+            backgroundImage: 'url(/assets/images/Library_Hero_3840_1240.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
+          <img
+            src="/assets/images/Library_Logo_1280_720.png"
+            alt=""
+            className="absolute inset-y-0 left-0 bottom-8 py-3 z-10 h-60 w-auto object-contain pointer-events-none"
+          />
+
+          
           <div className="absolute inset-0 bg-black/60"></div>
-          <div className="relative z-10 h-full flex flex-col justify-end px-6 py-5">
-            <p className="text-sm uppercase tracking-wide text-gray-300">Custom Engine</p>
-            <p className="mt-1 text-gray-300">August 2025 – June 2026 | Producer, Programmer</p>
+          <div className="relative z-10 h-full flex flex-col justify-end alignment-right px-6 py-5">
+            <p className="text-2xl uppercase tracking-wide text-gray-100">Custom Engine | C++, OpenGL</p>
+            <p className="mt-1 text-xl text-gray-300">August 2025 – September 2026 | Producer, Programmer</p>
           </div>
+
+
         </div>
 
         <div className="space-y-4 animate-slide-in-0.7s">

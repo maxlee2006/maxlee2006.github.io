@@ -115,8 +115,8 @@ export default function Home() {
 
                 <div className="relative z-10">
                     <p className="text-xl uppercase tracking-wide text-gray-300">Featured Project</p>
-                    <h1 className="text-3xl md:text-5xl font-semibold text-white">The Long March</h1>
-                    <p className="mt-2 text-gray-400">Tower Defense in Custom C++ / OpenGL engine — producer and programmer</p>
+                    <h1 className="text-3xl md:text-5xl font-semibold text-white">Long March</h1>
+                    <p className="mt-2 text-xl text-gray-400">Utilize four unique towers to defend your land from attackers across three levels! | Producer, Programmer</p>
                 </div>
             </Link>
             
@@ -144,7 +144,7 @@ export default function Home() {
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Coding Projects</p>
                         <h2 className="text-4xl font-semibold text-white">Code</h2>
-                        <p className="mt-2 text-gray-400">Production experience and shipped projects</p>
+                        <p className="mt-2 text-gray-400">Custom Engines and Web Development</p>
                     </div>
                     
                 </Link>
@@ -165,7 +165,7 @@ export default function Home() {
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Art Projects</p>
                         <h2 className="text-4xl font-semibold text-white">Art</h2>
-                        <p className="mt-2 text-gray-400">Blender projects, animations, and sketches</p>   
+                        <p className="mt-2 text-gray-400">3D Modeling and Animation</p>   
                     </div>
                 </Link>
 
@@ -187,7 +187,7 @@ export default function Home() {
                     <div className='relative z-10'>
                         <p className="text-sm uppercase tracking-wide text-gray-300">Game Design and Implementation</p>
                         <h2 className="text-4xl font-semibold text-white">Design</h2>
-                        <p className="mt-2 text-gray-400">Unreal Engine and custom engines</p>   
+                        <p className="mt-2 text-gray-400">Unreal Engine and Custom Engines</p>   
                     </div>
                 </Link>
                 
