@@ -1,5 +1,5 @@
 -- Run as the database owner in Supabase SQL Editor, after reviewing existing columns.
--- Transactional and repeatable: never deletes rows, tables, or existing policies.
+-- Transactional and repeatable: never deletes rows, tables, or unrelated policies.
 begin;
 
 create table if not exists public."Articles" (
@@ -24,6 +24,18 @@ begin
     execute format('alter table public.%I add column if not exists sort_order integer not null default 0', table_name);
     execute format('alter table public.%I add column if not exists published boolean not null default false', table_name);
     execute format('alter table public.%I add column if not exists content jsonb not null default ''{"body":[]}''::jsonb', table_name);
+
+    -- The live project's old CMS used required body/page_id columns without defaults.
+    -- The new CMS writes content/page instead. Keep legacy values and columns, but
+    -- allow them to be omitted by the seed and future Table Editor inserts.
+    for column_name in
+      select a.attname::text from pg_attribute a
+      where a.attrelid = format('public.%I', table_name)::regclass
+        and a.attnum > 0 and not a.attisdropped and a.attnotnull
+        and (a.attname = 'body' or (table_name = 'Modals' and a.attname = 'page_id'))
+    loop
+      execute format('alter table public.%I alter column %I drop not null', table_name, column_name);
+    end loop;
 
     -- Fail atomically on incompatible existing types; never coerce/delete existing data.
     for column_name, existing_type in

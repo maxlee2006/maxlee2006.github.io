@@ -12,6 +12,8 @@ Existing page layouts, categories, typography, media, and the `/LongMarch` addre
 
 ## Before merging or deploying
 
+**Live database setup completed October 20, 2026** for project `vvgaalfwstwpbzzbkbtx`: the adapted migration is applied, LongMarch and all 12 modals are imported, and live PostgreSQL security checks pass. The steps below remain the repeatable setup procedure; do not re-import to replace owner edits. Website deployment and merging remain separate, unperformed actions. See the verification section at the end for the remaining network and GitHub Actions checks.
+
 The branch does not automatically change your live database. A public publishable key cannot administer tables. **Apply the schema and import before deploying this branch**; otherwise the site will display a content-unavailable message. The deployment workflow checks readable content and stops on a missing schema, invalid JSON, or missing LongMarch article.
 
 1. In Supabase, open your project and back up/export the existing Articles and Modals tables. The table names are case-sensitive: `"Articles"` and `"Modals"`.
@@ -24,7 +26,7 @@ The branch does not automatically change your live database. A public publishabl
    order by table_name, ordinal_position;
    ```
 
-3. Open `supabase/migrations/202610200001_cms.sql`. Review it, then paste it into Supabase **SQL Editor** and run it as the database owner. It adds missing CMS columns, a unique slug index, validation checks, public read grants, and row-level security policies. It does not delete existing rows or overwrite existing content. It runs in a transaction, so an incompatible column type or duplicate slug stops the whole migration. Existing unrelated columns are retained. If an existing unrelated column is required and has no default, adapt the import to supply it after reviewing the actual schema; do not delete it to force the import through.
+3. Open `supabase/migrations/202610200001_cms.sql`. Review it, then paste it into Supabase **SQL Editor** and run it as the database owner. It adds missing CMS columns, a unique slug index, validation checks, public read grants, and row-level security policies. It does not delete existing rows or overwrite existing content. It runs in a transaction, so an incompatible column type or duplicate slug stops the whole migration. Existing unrelated columns are retained. The inspected live schema required legacy `Articles.body`, `Modals.body`, and `Modals.page_id` values without defaults. The adapted migration makes those three legacy fields nullable, because the new CMS writes `content` and `page`; it keeps their types, defaults, columns, and any existing values. It does not invent numeric page IDs or duplicate content into legacy fields. Review other required legacy fields separately rather than dropping columns to force an import through.
 4. Open `supabase/seed.sql`, copy its contents into SQL Editor, and run it. This file is generated from the JSON import. If you edit `supabase/seed.json` before importing, regenerate it from the repository directory:
 
    ```bash
@@ -43,7 +45,7 @@ The branch does not automatically change your live database. A public publishabl
 6. Copy `.env.example` to `.env.local` for local development if you do not already have that file. The example contains this project's public URL and publishable key. Never put a secret or service-role key in a variable starting with `NEXT_PUBLIC_`.
 7. On GitHub, open the repository's **Settings → Secrets and variables → Actions → Variables**. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` with the values from `.env.example`. They must be available at build time because Next.js embeds public configuration in the static JavaScript. They are deliberately public. A missing variable stops deployment with a clear message. The Actions workflow uses Node 24, performs lint and unit/database tests, checks live content, builds, and deploys the `out` directory.
 8. Run `npm run cms:check`, `npm run lint`, `npm test`, and `npm run build` locally. `cms:check` only reads data; it validates all published records and the LongMarch slug. It does not attempt writes and does not prove live write permissions. `npm run dev` starts local development. `npm start` is incompatible with this project's static export configuration.
-9. Verify the permissions below before merging. Then merge and deploy through the existing GitHub Pages workflow.
+9. Verify the permissions below before any separately authorized merge/deployment. The existing GitHub Pages workflow deploys only on pushes to `main`; pushing this feature branch does not deploy the website.
 
 ## Table fields
 
@@ -161,7 +163,9 @@ Website code only makes `SELECT` requests. Removing write buttons would be insuf
 
 The migration's privileges cover these two tables. Review any existing `SECURITY DEFINER` database functions, views, triggers, privileged API endpoints, or other applications that can access them. Those can use elevated privileges and require their own audit. Do not grant public access to a function that writes CMS content. Do not weaken these policies to fix an empty-content issue; check `published`, JSON validity, and the public key instead.
 
-The policy tests use an isolated local PostgreSQL engine (PGlite), not your production database. They test both public roles, hidden drafts, legacy permissive policies, old column grants, forbidden writes/truncate, repeat imports, and rollback on incompatible schema. Passing them proves the supplied migration's behavior in that test database. It does not prove the migration has been applied to your live project.
+The unit/database tests use an isolated local PostgreSQL engine (PGlite), not your production database. They test both public roles, hidden drafts, legacy permissive policies, old column grants, forbidden writes/truncate, repeat imports, rollback on incompatible schema, and preservation of legacy fields/IDs and owner-edited matching records. Passing them proves the supplied migration's behavior in that test database. Live verification is separate and was also performed as described below.
+
+`supabase/tests/cms-security.sql` is the repeatable owner-run live security check. It checks effective table and column privileges, RLS activation, and unfiltered published/draft visibility for both public roles. It inserts two draft fixtures using explicit negative IDs (without advancing identity sequences), then rolls the whole transaction back. It plans insert/update/delete with `EXPLAIN` **without** `ANALYZE`, so those statements never execute. Truncate is checked through effective privileges; no truncate statement runs. It never updates or deletes a production content row. Run the entire file together, including its final `ROLLBACK`, and choose unused fixture IDs/slugs if a future owner record uses those identifiers.
 
 After applying the migration, verify the **live** permissions from SQL Editor:
 
@@ -185,7 +189,7 @@ where table_schema = 'public' and table_name in ('Articles', 'Modals')
   and grantee in ('PUBLIC', 'anon', 'authenticated');
 ```
 
-Both RLS flags should be true. Both roles should have SELECT on the CMS columns and no write grants. Keep a draft row and confirm it is absent from public queries. Test writes only in a transaction or a disposable development database; never use a production content row as a write-permission probe. The supplied test suite already attempts writes against a disposable database.
+Both RLS flags should be true. Both roles should have SELECT on the CMS columns and no write grants. Use the rollback-only draft fixtures above to check draft visibility without leaving test content in production. Never use a production content row as a write-permission probe. The supplied unit/database suite attempts actual writes only against a disposable database.
 
 ## Why the SSR/session example is different here
 
@@ -214,6 +218,7 @@ Both requested packages (`@supabase/supabase-js` and `@supabase/ssr`) are instal
 | `supabase/migrations/202610200001_cms.sql` | Additive schema/security migration; no production database changes happen just by committing this file. |
 | `supabase/seed.json` | One-time JSON snapshot of the original article and 12 modals; not bundled into the website. |
 | `supabase/seed.sql` | Ready-to-run SQL import generated from `seed.json`; tested to stay synchronized with the JSON. |
+| `supabase/tests/cms-security.sql` | Owner-run, rollback-only live assertions for RLS, exact column privileges, draft visibility, and denied write planning. Also exercised in the isolated database tests. |
 | `scripts/export-seed.ts` | Validates the JSON snapshot and prints repeatable, transactional import SQL that preserves rows with matching slugs. |
 | `scripts/check-cms.ts` | Read-only live schema/content check used before deployment. Uses Node 24's environment-proxy support in the cloud. |
 | `.env.example` | Documents public browser settings. Your local `.env.local` stays ignored. |
@@ -247,7 +252,7 @@ Do not run `next dev` and `next build` at the same time: they share `.next`. Sto
 - **Unexpected old content:** reload the page. Existing open pages are not realtime subscriptions. The seed import skips existing slugs; it does not overwrite edited records.
 - **Image missing:** check the exact filename/case or the public HTTPS Storage URL. GitHub Pages paths are case-sensitive.
 - **Public API works locally but not after deployment:** check that both GitHub Actions variables were set at build time and rebuild. Changing those settings cannot change JavaScript that has already been deployed.
-- **Network access denied in Codex cloud:** allow `vvgaalfwstwpbzzbkbtx.supabase.co` in environment settings. The MCP connection also needs `mcp.supabase.com`; OAuth may require additional destinations reported by the authentication flow. These cloud rules do not control visitors' browsers.
+- **Network access denied in Codex cloud:** allow `vvgaalfwstwpbzzbkbtx.supabase.co` in environment settings for public-key checks, and `api.github.com` for checking Actions variables with the GitHub CLI. These are separate from authorizing an assistant in chat. The MCP connection also needs `mcp.supabase.com`; OAuth may require additional destinations reported by the authentication flow. These cloud rules do not control visitors' browsers.
 - **Access denied while importing:** use SQL Editor as the project owner. Do not grant visitors write access or replace the public key with an admin key.
 
 ## Optional Supabase MCP connection
@@ -265,11 +270,30 @@ Complete the browser sign-in, restart Codex, then use `/mcp` in the interactive 
 
 ## Verification performed on this branch (October 20, 2026)
 
+### Completed against the live Supabase project
+
+- Used the connected Supabase plugin for project `vvgaalfwstwpbzzbkbtx`. Owner-level inspection confirmed both tables were physically empty before import. It inspected columns, types, defaults, nullability, keys/indexes, content, grants, policies, role memberships, views, functions, and triggers. There were no matching-content conflicts and no pre-existing policies.
+- Applied the adapted `supabase/migrations/202610200001_cms.sql` through the plugin. Supabase recorded migration **`20261020183904_cms_compatible_legacy_columns`**. Existing identity primary keys, default values, and legacy columns were retained. Only the required `body` fields and `Modals.page_id` were made nullable. Missing CMS columns, unique slug indexes, validation constraints, and read-only security policies were added. No existing row or ID was changed.
+- Ran the supplied `supabase/seed.sql`, importing **one published LongMarch article and all 12 published modals**. Compared every CMS field of every imported row against the validated SQL seed: all 13 matched exactly. The SQL exporter fills schema defaults such as empty `method` values, so comparison uses the generated SQL payload, rather than the unnormalized JSON snapshot. The unchanged JSON import passes the application's record validation tests.
+- Also read all seven CMS fields of all 13 live published records under `SET LOCAL ROLE anon` without a website-side published filter, then ran those actual SQL results through the application's `recordSchema`: all passed, including `long-march`. This verifies the live content and SQL-role access independently of the seed fixtures; it does not test the REST transport or public API key.
+- Validated both `cms_published_content` constraints through a second recorded migration, **`20261020183949_cms_validate_imported_content`**. Both constraints are validated on the live project.
+- Executed `supabase/tests/cms-security.sql` against the live project. Both `anon` and `authenticated` passed effective privilege and RLS checks. Each can SELECT exactly `slug`, `title`, `page`, `category`, `sort_order`, `published`, and `content`. There are no PUBLIC/visitor table grants, no visitor column write grants, and no effective insert/update/delete/truncate privileges. Legacy columns are not publicly readable.
+- Both tables have RLS enabled and forced. Each has `cms_public_read` (permissive SELECT), `cms_published_only` (restrictive SELECT), and restrictive false insert/update/delete policies. Both visitor roles saw all published rows through unfiltered SQL queries and saw neither rollback-only draft fixture. Insert/update/delete planning failed with insufficient privileges. No actual write against an existing production content row was attempted. A follow-up owner query confirmed both fixtures were absent and counts remained 1 article / 12 modals.
+- The public roles are neither superusers nor RLS-bypass roles, have no inherited role memberships, and cannot create objects in `public`. No public-schema functions, CMS-referencing privileged functions, CMS triggers, or views referencing these tables were found. Standard extension/system views were inspected and did not reference CMS content. Supabase's security advisor returned **zero findings**.
+- All administrative operations used the connected plugin. No privileged credential was copied into a local environment variable, browser code, Git, or logs. The static site still uses only the public configuration from `.env.example`.
+
+The migration versions above were assigned by the connected plugin. The repository retains its original reviewed migration filename; the GitHub Pages workflow does not run Supabase migrations. Reconcile local/remote migration history before introducing a future CLI `db push` workflow.
+
+### Completed locally
+
+- Installed the committed dependency lockfile with `npm ci` on Node 24.
 - `npm run lint`: passed with no warnings/errors.
-- `npm test`: 8 tests passed, including isolated PostgreSQL migration/RLS/privilege checks and import repeatability.
-- Browser tests: all 4 passed against the development server and again against the production export served locally with GitHub Pages-style clean URL handling. Supabase responses were mocked from the JSON import. These tests cover existing content/categories, article navigation, keyboard modal dismissal/focus restoration, new database records, paragraph/image/paragraph order, escaped script text, and failure/retry behavior.
-- `NEXT_TELEMETRY_DISABLED=1 npm run build`: passed and exported all 8 static routes (including the framework error page). Existing browser-compatibility-data age warnings remain nonblocking.
-- Local requests to the six exported site pages returned HTTP 200. Browser JavaScript bundles were checked to confirm original article/modal text was not included as a hardcoded fallback.
-- Live public-key reads reached both Supabase tables and returned no exposed rows. A read-only schema/content check failed with `column Articles.page does not exist`; a separate column probe also showed `Modals.title` missing. These checks do not prove the tables are physically empty, because RLS can hide rows.
-- **Not completed on the live project:** applying the migration, importing content, and verifying deployed RLS/privileges. No authenticated administrator MCP connection was available. No live database writes were attempted. The supplied publishable key cannot perform administrator schema changes.
-- Required rollout: apply the reviewed schema migration and seed SQL, configure both public GitHub Actions variables, pass `npm run cms:check`, and verify live permissions before merging/deploying. Environment network/public-variable draft changes are separate from GitHub settings and deployment.
+- `npm test`: **9 tests passed**, including isolated PostgreSQL security/import tests and the new live-schema compatibility regression. The regression preserves existing IDs, legacy values, and an owner-edited matching LongMarch record across repeated migrations/imports. It also exercises the rollback-only security script and confirms fixture removal.
+- `NEXT_TELEMETRY_DISABLED=1 npm run build`: passed and exported all **8 static routes**, including the framework error page. Existing browser-compatibility-data age warnings remain nonblocking. Pages Router and `output: 'export'` are unchanged; no server middleware was introduced.
+- `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`: **all 4 passed against the production export**, served locally with GitHub Pages-style clean URLs. Supabase responses were **mocked** from the JSON seed. These cover existing content/categories, article navigation, keyboard modal dismissal/focus restoration, new database records, paragraph/image/paragraph order, escaped script text, and failure/retry behavior. They do not prove live REST connectivity.
+
+### Remaining checks before a separately authorized deployment
+
+- **Public-key REST check is network-blocked.** `.env.local` was copied from the documented public `.env.example` and stays Git-ignored. `npm run cms:check` was attempted, but the cloud proxy denied access to `vvgaalfwstwpbzzbkbtx.supabase.co` (CONNECT HTTP 403); the checker reported `Articles: TypeError: fetch failed`. The managed environment still had no custom allowed hosts even after chat authorization. Add the host in the environment's network settings and rerun `npm run cms:check`. The required result is `Articles: 1 published records validated`, `Modals: 12 published records validated`, and the final success message. The command also requires the `long-march` slug. SQL-role verification succeeded, but successful public-key REST/LongMarch browser verification is still pending.
+- **GitHub Actions variables could not be inspected.** `gh variable list` was attempted for both the repository and the `github-pages` environment; the proxy denied `api.github.com` with HTTP 403 before GitHub authorization. The connected GitHub plugin's generic fetch does not support the Actions variables endpoint. This means their presence is **unknown**, not confirmed missing. Allow `api.github.com`, then check both scopes for `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, or review [repository Actions variables](https://github.com/maxlee2006/maxlee2006.github.io/settings/variables/actions) directly. Confirm effective values match `.env.example`, including any environment-scoped overrides. The workflow requires both at build time.
+- No merge into `main` or website deployment was performed. The database migration/import/security work is complete; do not repeat it to resolve the network checks. Pass the public-key check and confirm the Actions variables before deployment.
