@@ -12,7 +12,7 @@ Existing page layouts, categories, typography, media, and the `/LongMarch` addre
 
 ## Before merging or deploying
 
-**Live database setup completed October 20, 2026** for project `vvgaalfwstwpbzzbkbtx`: the adapted migration is applied, LongMarch and all 12 modals are imported, and live PostgreSQL security checks pass. The steps below remain the repeatable setup procedure; do not re-import to replace owner edits. Website deployment and merging remain separate, unperformed actions. See the verification section at the end for the remaining network and GitHub Actions checks.
+**Live database setup completed October 20, 2026** for project `vvgaalfwstwpbzzbkbtx`: the adapted migration is applied, LongMarch and all 12 modals are imported, and live PostgreSQL security checks pass. The steps below remain the repeatable setup procedure; do not re-import to replace owner edits. Website deployment and merging remain separate, unperformed actions. The public-key REST check now passes; see the verification section at the end for the remaining GitHub Actions variable access check.
 
 The branch does not automatically change your live database. A public publishable key cannot administer tables. **Apply the schema and import before deploying this branch**; otherwise the site will display a content-unavailable message. The deployment workflow checks readable content and stops on a missing schema, invalid JSON, or missing LongMarch article.
 
@@ -292,8 +292,20 @@ The migration versions above were assigned by the connected plugin. The reposito
 - `NEXT_TELEMETRY_DISABLED=1 npm run build`: passed and exported all **8 static routes**, including the framework error page. Existing browser-compatibility-data age warnings remain nonblocking. Pages Router and `output: 'export'` are unchanged; no server middleware was introduced.
 - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`: **all 4 passed against the production export**, served locally with GitHub Pages-style clean URLs. Supabase responses were **mocked** from the JSON seed. These cover existing content/categories, article navigation, keyboard modal dismissal/focus restoration, new database records, paragraph/image/paragraph order, escaped script text, and failure/retry behavior. They do not prove live REST connectivity.
 
+### Public-key REST verification (October 20, 2026)
+
+- Installed the committed lockfile with `npm ci` on Node **24.19.0** and ran `npm run cms:check` against the live project using the public configuration from `.env.example`. `.env.local` remains Git-ignored. The command exited **0** with:
+
+  ```text
+  Articles: 1 published records validated
+  Modals: 12 published records validated
+  Read-only content check passed. This does not verify live write restrictions; see docs/CMS.md.
+  ```
+
+- This confirms public-key REST connectivity, validation of all 13 published records, and the required `long-march` article. The previous proxy/network block is resolved. This was a read-only check; no database migration, import, or content write was repeated. A live browser check was not performed in this follow-up; the earlier browser tests used mocked responses.
+
 ### Remaining checks before a separately authorized deployment
 
-- **Public-key REST check is network-blocked.** `.env.local` was copied from the documented public `.env.example` and stays Git-ignored. `npm run cms:check` was attempted, but the cloud proxy denied access to `vvgaalfwstwpbzzbkbtx.supabase.co` (CONNECT HTTP 403); the checker reported `Articles: TypeError: fetch failed`. The managed environment still had no custom allowed hosts even after chat authorization. Add the host in the environment's network settings and rerun `npm run cms:check`. The required result is `Articles: 1 published records validated`, `Modals: 12 published records validated`, and the final success message. The command also requires the `long-march` slug. SQL-role verification succeeded, but successful public-key REST/LongMarch browser verification is still pending.
-- **GitHub Actions variables could not be inspected.** `gh variable list` was attempted for both the repository and the `github-pages` environment; the proxy denied `api.github.com` with HTTP 403 before GitHub authorization. The connected GitHub plugin's generic fetch does not support the Actions variables endpoint. This means their presence is **unknown**, not confirmed missing. Allow `api.github.com`, then check both scopes for `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, or review [repository Actions variables](https://github.com/maxlee2006/maxlee2006.github.io/settings/variables/actions) directly. Confirm effective values match `.env.example`, including any environment-scoped overrides. The workflow requires both at build time.
-- No merge into `main` or website deployment was performed. The database migration/import/security work is complete; do not repeat it to resolve the network checks. Pass the public-key check and confirm the Actions variables before deployment.
+- **GitHub Actions variables remain unverified because of integration permissions.** The API is now reachable, but both `gh api repos/maxlee2006/maxlee2006.github.io/actions/variables` and `gh api repos/maxlee2006/maxlee2006.github.io/environments/github-pages/variables` returned GitHub HTTP **403**, `Resource not accessible by integration`. This replaces the earlier proxy denial: the current credential cannot inspect variables in either scope. Their presence and values are **unknown**, not confirmed missing or incorrect.
+- Confirm `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in [repository Actions variables](https://github.com/maxlee2006/maxlee2006.github.io/settings/variables/actions) and any overrides in the [github-pages environment](https://github.com/maxlee2006/maxlee2006.github.io/settings/environments). Their effective values must exactly match `.env.example`; environment values take precedence over repository values. The workflow binds both with `vars` in its build step and runs under `github-pages`. Verification requires a credential with permission to read Actions variables in both scopes, or direct owner review of those settings. No variables were changed and no workflow was triggered.
+- No merge into `main` or website deployment was performed. The database setup and public-key REST check are complete; do not repeat the migration/import to resolve the GitHub permissions check. Confirm the Actions variables before deployment.
