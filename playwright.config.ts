@@ -1,5 +1,8 @@
 import { defineConfig } from '@playwright/test'
 
+// Start a local development server unless one is already running. To test a
+// production export instead, serve out/ at this same address before running
+// Playwright locally. Don't run dev and build together: both write to .next.
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: true,

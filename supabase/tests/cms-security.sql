@@ -1,6 +1,9 @@
 -- Run through an owner/admin connection, never through the website client.
 -- Existing content is only read. The two draft fixtures use explicit negative IDs
 -- (no sequence changes), exist only within this transaction, and are rolled back.
+-- A fixture is temporary test data. The owner can see it, but visitor roles
+-- must not. Run this ENTIRE file including ROLLBACK, using unused IDs/slugs.
+-- If a statement errors, roll back the failed transaction before other work.
 begin;
 
 insert into public."Articles" (id,slug,title,published)
@@ -30,6 +33,8 @@ begin
       if exists (select from pg_roles where rolname=visitor and (rolsuper or rolbypassrls)) then
         raise exception '% bypasses RLS', visitor;
       end if;
+      -- Effective privileges include grants inherited through other roles, so
+      -- check what the visitor can actually do, not just named policy text.
       foreach privilege in array array['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'] loop
         if has_table_privilege(visitor,target,privilege) then
           raise exception '% has forbidden % on %', visitor,privilege,target;
@@ -47,6 +52,8 @@ begin
         end if;
       end loop;
 
+      -- Temporarily act as a visitor inside this transaction. Compare their
+      -- unfiltered results with the owner's published count, then reset the role.
       execute format('set local role %I', visitor);
       if not row_security_active(target) then raise exception 'RLS inactive for %',visitor; end if;
       -- Deliberately omit the website's published=true filter.
@@ -64,6 +71,8 @@ begin
         begin
           execute statement;
           raise exception 'Write planning unexpectedly allowed for % on %',visitor,target;
+        -- A permissions error is the expected passing result for this probe.
+        -- Any other error propagates, rather than being mistaken for success.
         exception when insufficient_privilege then null;
         end;
       end loop;

@@ -4,6 +4,9 @@ import test from 'node:test'
 import { PGlite } from '@electric-sql/pglite'
 import { seedSql } from '../scripts/export-seed'
 
+// PGlite is a disposable PostgreSQL engine running locally. These tests may
+// perform writes because they never connect to the production Supabase project.
+// Read the actual migration/import/check files so tests exercise shipped SQL.
 const migration = readFileSync(new URL('../supabase/migrations/202610200001_cms.sql', import.meta.url), 'utf8')
 const securityCheck = readFileSync(new URL('../supabase/tests/cms-security.sql', import.meta.url), 'utf8')
 const columns = 'slug,title,page,category,sort_order,published,content'

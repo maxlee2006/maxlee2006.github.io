@@ -6,6 +6,8 @@ import CmsStatus from '../components/CmsStatus'
 
 export default function Home() {
   const { catalog, error, retry } = useCatalog()
+  // The catalog is sorted already, so the first featured article wins. Without
+  // a featured row, omit this section rather than showing stale hardcoded data.
   const featured = catalog?.articles.find(article => article.content.featured)
   return (
     <>

@@ -1,6 +1,14 @@
 import { z } from 'zod'
 
-// URLs become attributes only after validation. HTML is never interpreted.
+/** Shared rules for live reads, the import exporter, and cms:check.
+ * JSON is data: objects have named fields; arrays keep items in order.
+ * TypeScript describes valid values to the editor. Zod checks actual values
+ * while the program runs, including data returned over the network.
+ */
+// A root-relative path (/assets/...) uses this website's host. An HTTPS URL
+// includes another host. Reject script/data URLs, ambiguous //host paths,
+// backslashes, whitespace/control characters, and embedded usernames/passwords.
+// This checks address syntax, not whether an image exists or its host is trusted.
 export function isSafeUrl(value: string): boolean {
   if (!value || /[\s\\\u0000-\u001f\u007f]/.test(value)) return false
   if (value.startsWith('/') && !value.startsWith('//')) return true
@@ -12,6 +20,9 @@ export function isSafeUrl(value: string): boolean {
   }
 }
 
+// An embed puts another website inside an iframe (a small browser area).
+// Unlike ordinary links/images, only these specific providers and URL shapes
+// are supported. A normal YouTube watch URL must become /embed/VIDEO_ID.
 export function isSafeEmbed(value: string): boolean {
   if (!isSafeUrl(value) || value.startsWith('/')) return false
   const url = new URL(value)
@@ -24,6 +35,8 @@ export function isSafeEmbed(value: string): boolean {
 
 const url = z.string().refine(isSafeUrl, 'Use a root-relative path or an HTTPS URL without whitespace or credentials')
 const embedUrl = z.string().refine(isSafeEmbed, 'Unsupported embed URL')
+// The type field selects which other fields are meaningful. An ordered body
+// can repeat a type: paragraph -> image -> paragraph is three separate entries.
 export type ContentBlock =
   | { type: 'paragraph'; text: string; muted?: boolean }
   | { type: 'heading'; text: string }
@@ -32,7 +45,9 @@ export type ContentBlock =
   | { type: 'embed'; src: string; title: string; height?: number }
   | { type: 'group'; layout: 'text' | 'embeds' | 'gallery'; body: ContentBlock[] }
 
-// Limit nesting so an accidental JSON cycle/deeply nested input cannot exhaust the renderer.
+// A group contains another body array. Build progressively shallower validators
+// to allow at most four nested groups and 500 entries per body. That keeps
+// malformed/deep input from causing unbounded recursive validation/rendering.
 function blockSchema(depth: number): z.ZodType<ContentBlock> {
   const blocks = [
     z.object({ type: z.literal('paragraph'), text: z.string(), muted: z.boolean().optional() }),
@@ -48,6 +63,9 @@ function blockSchema(depth: number): z.ZodType<ContentBlock> {
   })])
 }
 
+// Optional means a field can be absent; default supplies a value when absent.
+// Defaults don't overwrite the database: they normalize the copy we read.
+// thumbnail and body are required even when no hero or metadata is supplied.
 const contentSchema = z.object({
   thumbnail: url,
   date: z.string().default(''),
@@ -64,6 +82,10 @@ const contentSchema = z.object({
   body: z.array(blockSchema(4)).max(500),
 })
 
+// These are the seven CMS columns read by the site. published must be true
+// because this schema describes PUBLIC content, not partially completed drafts.
+// superRefine below checks a relationship between fields: a valid category must
+// belong to the selected page, rather than just being any string.
 export const recordSchema = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: z.string().min(1),
@@ -85,6 +107,9 @@ export const recordSchema = z.object({
 
 export type CmsRecord = z.infer<typeof recordSchema>
 export type Catalog = { articles: CmsRecord[]; modals: CmsRecord[] }
+// Preserve the old case-sensitive LongMarch address. Other articles share one
+// static page, which reads the slug after ? in the address. No new HTML file is
+// required per article; encodeURIComponent safely inserts the slug into a URL.
 export function articleHref(slug: string): string {
   return slug === 'long-march' ? '/LongMarch' : `/articles?slug=${encodeURIComponent(slug)}`
 }

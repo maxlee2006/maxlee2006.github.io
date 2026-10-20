@@ -10,6 +10,112 @@ The Supabase dashboard's **Table Editor** is your editing interface. There is no
 
 Existing page layouts, categories, typography, media, and the `/LongMarch` address are retained. The home page's featured project and the LongMarch project card now also read their content from the database. Loading/error messages appear while data is loading or if it cannot be read. Content is fetched after the page opens, so there can be a short loading delay; search engines that do not execute JavaScript will only see the static shell. This is the tradeoff for live content updates on GitHub Pages.
 
+## Start here: no database or networking experience needed
+
+A **CMS** (content management system) keeps content separate from page code. Here, you write content in Supabase's Table Editor, and the website turns it into cards, articles, and dialogs. You do not need to edit React code to publish another article in an existing category.
+
+### The pieces in everyday terms
+
+| Term | Meaning in this website |
+| --- | --- |
+| Database / PostgreSQL | Supabase's organized storage for the content. PostgreSQL is the database software. |
+| Table, row, column | A table resembles a spreadsheet. One row is one project; columns are its named fields, such as `title` and `published`. `Articles` and `Modals` are separate tables. |
+| Article / modal | An article opens a full page with its own link. A modal opens a dialog over a project grid. Both store their text and media in the same JSON format. |
+| Slug | A stable name used to find a row, such as `my-new-project`. It is different from the display title and the internal numeric `id`. |
+| JSON | Structured text using named fields in `{}` and ordered lists in `[]`. The `content` column stores a JSON object; its `body` is a list of blocks. |
+| Browser / client | The visitor's browser, which runs the website's JavaScript. There is no owner login in this website. |
+| Server / host | A computer/service answering requests. GitHub Pages sends website files; Supabase sends published content. They are separate services. |
+| API / REST / HTTP request | The API is Supabase's web interface for data. The browser sends an HTTPS request asking for rows, and receives a JSON response. REST describes the style of this interface. HTTP GET reads data. |
+| URL / path / query parameter | A URL is an address. In `/articles?slug=my-new-project`, `/articles` chooses the page and `slug=my-new-project` tells that page which row to display. |
+| Publishable key | Public configuration identifying API access to the Supabase project. Visitors can see it; it does not give them owner powers. |
+| Grant / role / RLS | A role is a set of database permissions. Grants allow operations/columns; row-level security (RLS) limits which rows a role can access. The database enforces these rules, even for requests made outside this website. |
+| Build / static export / deploy | Building turns source code into files in `out/`. Static means GitHub Pages serves those files without running a Next.js application server. Deploying uploads a build to the public website. |
+| Environment variable | A named configuration setting read by a program. Local settings live in `.env.local`; GitHub build settings live in Actions Variables. These are separate copies. |
+| Migration / seed | A migration changes table structure and permission rules. A seed is an initial content import. Neither is a live content backup that should be replayed after editing. |
+
+### What happens when someone opens a page
+
+```mermaid
+sequenceDiagram
+    participant Editor as You (Table Editor)
+    participant DB as Supabase (API + database)
+    participant Browser as Visitor browser
+    participant Pages as GitHub Pages
+    Editor->>DB: Save an article or modal
+    Browser->>Pages: Request website files
+    Pages-->>Browser: HTML, JavaScript, styles
+    Browser->>DB: Ask for published Articles and Modals using public settings
+    Note over DB: Check column permissions and hide drafts using RLS
+    DB-->>Browser: JSON rows, or an error
+    Note over Browser: Validate JSON, then show cards and ordered body blocks
+```
+
+The browser first shows a static page shell and a loading message. `useCatalog` starts the read after the page mounts (appears in the browser). `catalog.ts` requests both tables, taking up to 500 rows at a time. It checks each row using `content.ts`, then React updates the screen with the result. If a request or validation fails, the page offers **Try again**. It does not substitute the old seed content.
+
+**The important consequence:** GitHub Pages stores the layout/code, while Supabase stores current content. After this branch is deployed, changing a published row changes what a new page load reads. You do not redeploy for text edits or different image URLs. An already open page does not automatically refresh: reload or navigate away and back. The website does not maintain a live subscription to database edits.
+
+### Publish another article, in practice
+
+Follow [Add or edit an article](#add-or-edit-an-article) for the full fields and JSON example. For a new row with `slug = my-new-project` and `published = true`, the deployed address is:
+
+```text
+https://maxlee2006.github.io/articles?slug=my-new-project
+```
+
+It also appears in `/articles` and the grid matching its `page`/`category`. A new modal appears in its matching grid and opens when its card is clicked; it does not get an article link. Both rows need valid placement fields, a thumbnail, and a body array. A row that is a draft (`published = false`) cannot be previewed through this public website. A malformed published row can make the shared catalog fail validation, so review JSON carefully and run `npm run cms:check` after publishing changes.
+
+Keep existing slugs stable to preserve links. LongMarch is a special compatibility link: the `long-march` article opens at `/LongMarch`. New articles use the query-based address above. GitHub Pages can serve one `/articles` shell for any slug, which is why adding content does not require generating another page file.
+
+### Know which changes require deployment
+
+| Change | What to do |
+| --- | --- |
+| Edit text, title, order, placement within an existing category, or image URLs | Save the row in Supabase; reload the website. |
+| Add a valid article/modal in an existing category | Save the row and set `published = true` when ready; reload. |
+| Add an image file under repository `public/assets` | Commit and deploy the file; use its `/assets/...` path in content. |
+| Use an uploaded image at a public HTTPS Storage URL | Save that URL in content; no website deployment for the URL change. Storage access must be configured separately. |
+| Change layouts, add categories, or support another embed provider | Change code, validate, then deploy. A new category string alone does not create a page section. |
+| Change either public Supabase configuration setting | Update local settings or GitHub Actions Variables as appropriate; rebuild/redeploy the public site so browser JavaScript gets the new values. |
+
+### Public access versus owner access
+
+The public URL tells the client **where** to send requests. The publishable key is intended to travel with those requests. It is not the password you use to sign into the Supabase dashboard. The database still allows visitors to read only the seven CMS columns of published rows, and denies changes. Hiding an edit button or adding a browser-side filter would not enforce security: someone can construct their own requests.
+
+Your Supabase dashboard session has owner editing privileges. Keep that access separate. Never put a database password, service-role key, secret API key, or personal access token into `.env.example`, content JSON, browser code, or `NEXT_PUBLIC_` settings. Also, publishing content makes it public: switching it back to a draft stops future public reads but cannot erase copies someone already downloaded.
+
+### Local preview and the deployed site
+
+Use Node 24. On your computer, check out this branch, run `npm ci`, copy `.env.example` to `.env.local` only if that local file does not exist, then run `npm run dev` and open `http://localhost:3000`. Local preview reads the **same live published content** as the deployed site; it does not create a separate database. Editing local code changes only your preview until you deploy it.
+
+The workflow in `.github/workflows/deploy.yml` deploys on pushes to `main`. A feature-branch push saves work without deploying. When deployment is separately authorized, confirm the public Actions Variables, review/merge the branch into `main`, and watch **Deploy to GitHub Pages** in Actions. In repository **Settings → Pages**, the source should be **GitHub Actions**. The workflow checks content before building and deploying. It never runs the database migration or seed import.
+
+On Windows, `EPERM ... unlink ... next-swc...node` during `npm ci` usually means a development server still has Next.js's native compiler file open. Stop the server with Ctrl+C before installing; close the related Node process if necessary. Restarting Windows releases lingering locks. If a mapped/network drive keeps causing errors, try a checkout on a local drive. Administrator mode is not normally needed.
+
+## Reading the code: a guided path
+
+Start with the files below in order. Comments explain the decisions near the code; this section connects them. A React **component** produces part of the screen. A **hook** such as `useCatalog` connects reusable behavior to React's updates. A **Promise** represents a result that will arrive later, such as a network response.
+
+1. **`utils/supabase/client.ts`: choose the connection settings.** `createClient()` reuses one configured library client. This is not a direct database connection or a permanent cache of content. Next.js embeds the two `NEXT_PUBLIC_` values into browser JavaScript at build time. Login-session features are disabled because the website has no visitor sign-in.
+2. **`lib/cms/catalog.ts`: request the data.** `.from()` chooses a table; `.select()` chooses columns; `.eq()` filters to published rows; `.order()` sorts; `.range()` requests a batch. `await` waits for a response without freezing the screen. Each request has a 15-second timeout. Both tables load together; concurrent callers share an in-progress Promise, which is cleared after success or failure. Later reads can get fresh content.
+3. **`lib/cms/content.ts`: check what came back.** TypeScript helps while coding but cannot guarantee that live JSON is valid. Zod runs checks on actual values. `recordSchema` checks rows and page/category combinations; block validators check the body. URL validators reject unsafe address forms and restrict embed providers. A valid URL still might point to a missing file.
+4. **`lib/cms/useCatalog.ts`: update the screen.** `catalog = null` means data isn't available yet; `error` explains a failed read. An empty list in a loaded catalog is different: the read succeeded but found no rows in that table. Clicking retry changes a counter to run the loading effect again. Cleanup ignores late responses if the visitor leaves; it does not cancel a request another component may be sharing.
+5. **Page files: choose what to display.** Portfolio/design/professional pages select categories through `CmsGrid`; the home page selects the first featured article. `pages/articles.tsx` chooses list versus detail using the address's `slug`. `pages/LongMarch.tsx` preserves the old address. They handle loading/errors before passing valid data to display components.
+6. **Display components: turn data into HTML.** `CmsGrid` combines tables and sorts cards; `GridItem` links to articles or opens modals. `ArticleView` supplies the full-page layout. `MediaModal` manages the dialog, Escape key, keyboard focus, and scroll restoration. `ContentBody` walks the body array in order; a `group` renders another body within it. Text is escaped by React, not interpreted as HTML. Iframes show allowed external embeds in a restricted browser area.
+7. **Maintenance scripts and SQL: manage setup/checks separately.** `check-cms.ts` reads the live public API and validates results; failure exits with an error code so CI stops. `export-seed.ts` only prints SQL text, which an owner can separately run. The migration defines fields and permissions. The seed skips matching slugs instead of overwriting edits. The security SQL temporarily checks visitor roles and rolls back its fixtures.
+
+### What each check tells you
+
+| Command/check | What a pass means | What it does not prove |
+| --- | --- | --- |
+| `npm run lint` | Code meets the configured lint rules. | Live data access or correct content. |
+| `npm test` | Validators/import logic and permissions work in the tested disposable local database. | Production has the same schema/settings. |
+| `npm run cms:check` | The current public settings can read live published rows, their JSON validates, both tables are nonempty, and `long-march` exists. Counts can grow beyond the original 1/12. | Visitor writes are denied, media URLs work, or every layout looks right. |
+| `npm run build` | Code compiles, types check, and static files export. | Browser reads succeed after deployment; articles are not fetched during this build. |
+| `npm run test:e2e` | Browser interactions/rendering pass with mocked Supabase responses. | Live network connectivity or production permissions. |
+| Owner-run `supabase/tests/cms-security.sql` | Live database privilege, draft visibility, and denied write-planning assertions pass for both visitor roles. | Every external image/embed loads or a future permission change stays safe. |
+
+For a failure, identify the layer: no response usually points to connectivity; HTTP 403 may come from the cloud proxy **or** remote permissions, so read its message; missing-column errors point to schema; invalid-record errors point to saved JSON; missing images can be separate file/host failures. A GitHub Actions variable read denial is about GitHub integration permissions and says nothing about Supabase content access. The verification history below records the actual completed checks and remaining limitation.
+
 ## Before merging or deploying
 
 **Live database setup completed October 20, 2026** for project `vvgaalfwstwpbzzbkbtx`: the adapted migration is applied, LongMarch and all 12 modals are imported, and live PostgreSQL security checks pass. The steps below remain the repeatable setup procedure; do not re-import to replace owner edits. Website deployment and merging remain separate, unperformed actions. The public-key REST check now passes; see the verification section at the end for the remaining GitHub Actions variable access check.
@@ -309,3 +415,10 @@ The migration versions above were assigned by the connected plugin. The reposito
 - **GitHub Actions variables remain unverified because of integration permissions.** The API is now reachable, but both `gh api repos/maxlee2006/maxlee2006.github.io/actions/variables` and `gh api repos/maxlee2006/maxlee2006.github.io/environments/github-pages/variables` returned GitHub HTTP **403**, `Resource not accessible by integration`. This replaces the earlier proxy denial: the current credential cannot inspect variables in either scope. Their presence and values are **unknown**, not confirmed missing or incorrect.
 - Confirm `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in [repository Actions variables](https://github.com/maxlee2006/maxlee2006.github.io/settings/variables/actions) and any overrides in the [github-pages environment](https://github.com/maxlee2006/maxlee2006.github.io/settings/environments). Their effective values must exactly match `.env.example`; environment values take precedence over repository values. The workflow binds both with `vars` in its build step and runs under `github-pages`. Verification requires a credential with permission to read Actions variables in both scopes, or direct owner review of those settings. No variables were changed and no workflow was triggered.
 - No merge into `main` or website deployment was performed. The database setup and public-key REST check are complete; do not repeat the migration/import to resolve the GitHub permissions check. Confirm the Actions variables before deployment.
+
+### Documentation and comment review (October 20, 2026)
+
+- Added a beginner glossary, browser-to-database request walkthrough, code reading guide, local-preview guidance, and a comparison of what each verification command proves.
+- Expanded comments around public configuration, batched requests, runtime validation, React loading/retry cleanup, article routing, ordered rendering, dialog accessibility, SQL permissions, import generation, and deployment settings.
+- Article/modal field instructions, JSON creation examples, block rules, and media guidance are preserved unchanged. No runtime behavior, database statements, seed content, or workflow settings were changed. No live database operation, merge, or deployment was performed for this documentation update.
+- Validation: `npm run lint` passed with no warnings/errors; `npm test` passed all **9 tests**. A comparison confirmed unchanged emitted TypeScript/TSX code, SQL statements, workflow settings, and the existing creation-guideline sections. No additional browser or live API check was needed for comment/documentation changes.

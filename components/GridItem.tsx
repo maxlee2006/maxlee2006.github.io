@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { articleHref, type CmsRecord } from '../lib/cms/content'
 
 type Props = { data: CmsRecord; onOpenModal?: (item: CmsRecord) => void; article?: boolean }
+// One card appearance, two behaviors: an article is a real navigable link;
+// a modal is a keyboard-accessible button that passes its row back to the page.
+// Card-specific metadata uses ?? so an intentional empty override stays empty.
 export default function GridItem({ data, onOpenModal, article = false }: Props) {
   const content = <>
     <img src={data.content.thumbnail} alt={data.title} className="w-full h-full object-cover" />

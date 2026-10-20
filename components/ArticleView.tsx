@@ -3,6 +3,10 @@ import Link from 'next/link'
 import ContentBody from './ContentBody'
 import type { CmsRecord } from '../lib/cms/content'
 
+// Presentation only: routes choose an article after loading the catalog.
+// Reuse the original LongMarch layout for every article. Hero/logo metadata is
+// optional; ContentBody handles ordered text/media. Head updates browser metadata
+// after loading, so this isn't server-rendered article text for search crawlers.
 export default function ArticleView({ article }: { article: CmsRecord }) {
   const { content } = article
   return <>

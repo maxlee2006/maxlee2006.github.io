@@ -4,13 +4,19 @@ A Next.js website showcasing Max Lee's projects and portfolio.
 
 ## Getting Started
 
-Requires Node.js 24. For Supabase setup, the JSON format, editing content, security rules, and a detailed file-by-file explanation, see [CMS documentation](docs/CMS.md). Apply the schema migration and import before deploying this branch.
+Requires Node.js 24. New to the CMS? Start with [the beginner walkthrough](docs/CMS.md#start-here-no-database-or-networking-experience-needed), then follow the [modal](docs/CMS.md#add-or-edit-a-modal) or [article](docs/CMS.md#add-or-edit-an-article) instructions.
+
+For Supabase setup, the JSON format, editing content, security rules, and a detailed file-by-file explanation, see [CMS documentation](docs/CMS.md). Live database setup is already complete for this branch. The setup instructions are for reference; do not re-import content to preview or deploy it.
 
 ### Install Dependencies
 
 ```bash
 npm ci
 ```
+
+### Configure local content access
+
+Copy `.env.example` to `.env.local` if `.env.local` does not already exist. These are public website settings, not database owner credentials. The database setup for this branch is already complete; do not re-import the seed to preview the website. Local preview reads the same published rows as the deployed site.
 
 ### Run Development Server
 

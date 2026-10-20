@@ -10,6 +10,8 @@ import type { CmsRecord } from '../lib/cms/content'
 export default function Design() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
 
+  // Selection is temporary screen state, not a database edit. Closing a modal
+  // clears this value; changing category only changes which loaded cards appear.
   const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
 
   const toggleCategory = (category: string) => {
@@ -18,7 +20,11 @@ export default function Design() {
 
   const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
+  // Keep this function stable across renders so MediaModal's effect doesn't
+  // repeatedly tear down/recreate its focus and keyboard handling.
   const closeModal = useCallback(() => { setSelectedItem(null) }, [])
+  // Fetch the shared catalog once per mounted page (with explicit retry).
+  // CmsGrid below selects this page/category from those validated records.
   const { catalog, error, retry } = useCatalog()
 
   return (

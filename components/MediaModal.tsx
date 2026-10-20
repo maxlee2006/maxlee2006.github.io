@@ -3,6 +3,9 @@ import ContentBody from './ContentBody'
 import type { CmsRecord } from '../lib/cms/content'
 
 type MediaModalProps = { item: CmsRecord | null; onClose: () => void }
+// A modal is a dialog over the current page, not a separate article address.
+// The page owns the selected row; null means closed. Content is already loaded,
+// so opening a card doesn't send another database request.
 export default function MediaModal({ item, onClose }: MediaModalProps) {
   const [isVisible, setIsVisible] = useState(false)
   const closeButton = useRef<HTMLButtonElement>(null)
@@ -10,13 +13,18 @@ export default function MediaModal({ item, onClose }: MediaModalProps) {
   useEffect(() => {
     if (!item) { setIsVisible(false); return }
     setIsVisible(false)
+    // Start the fade after the dialog has appeared in the browser's document.
     const timeout = setTimeout(() => setIsVisible(true), 10)
+    // Keep keyboard focus in the dialog and freeze background page scrolling.
+    // Remember prior values so closing restores the visitor's place.
     const previouslyFocused = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     closeButton.current?.focus()
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
+      // Wrap Tab/Shift+Tab between the first and last controls instead of letting
+      // keyboard users tab into the page behind the dialog.
       if (event.key === 'Tab') {
         const elements = dialog.current?.querySelectorAll<HTMLElement>('button, a[href], iframe')
         const first = elements?.[0]
@@ -26,6 +34,8 @@ export default function MediaModal({ item, onClose }: MediaModalProps) {
       }
     }
     document.addEventListener('keydown', onKeyDown)
+    // React runs cleanup when the dialog closes, changes item, or unmounts.
+    // Remove listeners/timers and put focus back on the card that opened it.
     return () => {
       clearTimeout(timeout)
       document.body.style.overflow = previousOverflow

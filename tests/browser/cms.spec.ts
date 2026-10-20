@@ -2,6 +2,9 @@ import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
 const seed = JSON.parse(readFileSync('supabase/seed.json', 'utf8'))
+// Intercept the browser's HTTP requests and answer with local fixtures. This
+// makes UI tests repeatable without touching Supabase or depending on uptime.
+// A passing mocked test proves rendering/interaction, not live API permissions.
 async function mockDatabase(page: Page, data = seed) {
   await page.route('**/*', async route => {
     const url = new URL(route.request().url())
