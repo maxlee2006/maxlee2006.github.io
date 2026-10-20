@@ -1,25 +1,31 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useCallback, useState } from 'react'
 
 import MediaModal from '../components/MediaModal'
-import GridItem from '@/components/GridItem'
+import CmsGrid from '../components/CmsGrid'
+import CmsStatus from '../components/CmsStatus'
+import { useCatalog } from '../lib/cms/useCatalog'
+import type { CmsRecord } from '../lib/cms/content'
 
 export default function Portfolio() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
-  const [selectedItem, setSelectedItem] = useState<{image: string[], title?: string, description?: string, date?: string, link?: string[]} | null>(null)
+  // Selection is temporary screen state, not a database edit. Closing a modal
+  // clears this value; changing category only changes which loaded cards appear.
+  const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
 
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category)
   }
 
-  const openModal = (item: {image: string[], title?: string, description?: string, date?: string, link?: string[]}) => {
-    setSelectedItem(item)
-  }
+  const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
-  const closeModal = () => {
-    setSelectedItem(null)
-  }
+  // Keep this function stable across renders so MediaModal's effect doesn't
+  // repeatedly tear down/recreate its focus and keyboard handling.
+  const closeModal = useCallback(() => { setSelectedItem(null) }, [])
+  // Fetch the shared catalog once per mounted page (with explicit retry).
+  // CmsGrid below selects this page/category from those validated records.
+  const { catalog, error, retry } = useCatalog()
 
   return (
     <>
@@ -63,6 +69,7 @@ export default function Portfolio() {
 
 
         <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">ART</h1>
+        {!catalog && <CmsStatus error={error} retry={retry} />}
 
 
 {/*-------------------------------------------------------------------------------------*/}
@@ -91,93 +98,7 @@ export default function Portfolio() {
           {openCategory === 'modeling' && (
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-                {/* Easy to edit div objects */}
-
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/gun-model.jpg",
-                    title: "PS-22 Tracer",
-                    images: ["/assets/images/gun-model.jpg", "/assets/images/pistol_side.png"],
-                    description: "A small side project that I modeled, baked, and textured over the course of a week.",
-                    date: "September 2025",
-                    method: "Blender",
-                  }}
-                />
-
-                
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/kasu-render.jpg",
-                    title: "Kasu's Head",
-                    images: ["/assets/images/kasu-close.png", "/assets/images/kasu-render.jpg"],
-                    description: "A sculpt I made for use in a larger character model I'm working on. Modeled, Baked, Retopologized, and textured over the course of two weeks.",
-                    date: "November 2025",
-                    method: "Blender",
-                  }}
-                />
-
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/bg-notxt.png",
-                    title: "VICAR Model",
-                    images: ["/assets/images/bg-notxt.png", "/assets/images/vicar-masking.jpg", "/assets/images/Vicar.gif"],
-                    description: "A model I created for use in Unreal Engine 5. I worked on this on and off for around 6 months while attending my freshman year of college. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
-                    date: "December 2024 - June 2025",
-                    method: "Blender"
-                  }}
-                />
-
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/LR_dark.png",
-                    title: "LR-22 Reacher",
-                    images: ["/assets/images/LR_dark.png", "/assets/images/LR_side.png", "/assets/images/LR_table.png", "/assets/images/rifle-inspect.png"],
-                    description: "A weapon model I created for use in a Parkour Prototype in Unreal Engine 5. Worked on as a high school project. Modeled, Textured, Retopologized, Baked, and Rigged in 2 months during late 2023, and animated in March of 2024.",
-                    date: "October 2023 - November 2023, March 2024",
-                    method: "Blender",
-                    link: ["https://youtube.com/embed/9wCl1X0lJO8"]
-                  }}
-                />
-
-
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/kasu-old-render1.jpg",
-                    title: "Kasu V1",
-                    images: ["/assets/images/kasu-old-render1.jpg", "/assets/images/kasu-old-render2.jpg", "/assets/images/kasu-old.jpg"],
-                    description: "A model I made for an art exhibition in high school. Modeled, Baked, Retopologized, Textured, and Rigged in Blender.",
-                    date: "January 2024 - October 2024",
-                    method: "Blender",
-                  }}
-                />
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/crappy-old-kasu.jpg",
-                    title: "Old Kasu",
-                    images: ["/assets/images/crappy-old-kasu.jpg", "/assets/images/armguns.jpg"],
-                    description: "An early version of the parkour animation set I ended up using in my Parkour Prototype. Uses an Unfinished humanoid rig, gun rig, and sword model, All created of the course of 2023. Experimented with using Shape Keys and other more advanced rigs to make more complex sections of the humanoid rig.",
-                    date: "January 2023 - October 2023",
-                    method: "Blender",
-                    link: ["https://youtube.com/embed/uc1CA_6jRBE", "https://youtube.com/embed/60WZZkM7Z2c"]
-                  }}
-                />
-
-
-                {/* Add more grid items as needed */}
-                
-
+                {catalog && <CmsGrid catalog={catalog} page="portfolio" category="modeling" onOpenModal={openModal} />}
               </div>
             </div>
           )}
@@ -208,40 +129,7 @@ export default function Portfolio() {
           {openCategory === 'animation' && (
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                {/* Easy to edit div objects */}
-
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/DMT.png",
-                    title: "Dead Man's Tale",
-                    images: ["/assets/images/DMT.png"],
-                    description: "A redo of an animation I created in 2022. Animated over the span of two days. ",
-                    date: "May 2025",
-                    method: "Blender",
-                    link: ["https://youtube.com/embed/9FSpX1YcTv0"]
-                  }}
-                />
-
-<GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/Ringing-Nail.png",
-                    title: "The Ringing Nail",
-                    images: ["/assets/images/Ringing-Nail.png"],
-                    description: "A fan animation of The Ringing Nail from Destiny 2. Created over the course of 2 days.",
-                    date: "February 2023",
-                    method: "Blender",
-                    link: ["https://youtube.com/embed/RzHxhlIiMiE"]
-                  }}
-                />
-
-               
-
-                {/* Add more grid items as needed */}
-                
-
+                {catalog && <CmsGrid catalog={catalog} page="portfolio" category="animation" onOpenModal={openModal} />}
               </div>
             </div>
           )}
@@ -272,7 +160,7 @@ export default function Portfolio() {
           {openCategory === 'sketches' && (
             <div className="p-6">
               <div className="space-y-4">
-                {/* Easy to edit div objects */}
+                <CmsGrid catalog={catalog ?? { articles: [], modals: [] }} page="portfolio" category="sketches" onOpenModal={openModal} />
                 <div className="p-4">
                   <h3 className="text-xl mb-2">Sketches</h3>
                   <p className="text-gray-300">Under Construction.</p>

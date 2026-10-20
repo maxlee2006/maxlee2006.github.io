@@ -1,26 +1,30 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import MediaModal from '../components/MediaModal'
-import GridItem from '../components/GridItem'
-import type { URL_link } from '../components/MediaModal'
-import { link } from 'fs'
+import CmsGrid from '../components/CmsGrid'
+import CmsStatus from '../components/CmsStatus'
+import { useCatalog } from '../lib/cms/useCatalog'
+import type { CmsRecord } from '../lib/cms/content'
 
 export default function Professional() {
   const [openProject, setOpenProject] = useState<string | null>(null)
-  const [selectedItem, setSelectedItem] = useState<{image: string[], title?: string, description?: string, date?: string, link?: string[]} | null>(null)
+  // Selection is temporary screen state, not a database edit. Closing a modal
+  // clears this value; changing category only changes which loaded cards appear.
+  const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
 
   const toggleProject = (project: string) => {
     setOpenProject(openProject === project ? null : project)
   }
 
-  const openModal = (item: {image: string[], title?: string, description?: string, date?: string, link?: string[]}) => {
-    setSelectedItem(item)
-  }
+  const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
-  const closeModal = () => {
-    setSelectedItem(null)
-  }
+  // Keep this function stable across renders so MediaModal's effect doesn't
+  // repeatedly tear down/recreate its focus and keyboard handling.
+  const closeModal = useCallback(() => { setSelectedItem(null) }, [])
+  // Fetch the shared catalog once per mounted page (with explicit retry).
+  // CmsGrid below selects this page/category from those validated records.
+  const { catalog, error, retry } = useCatalog()
 
   return (
     <>
@@ -59,6 +63,7 @@ export default function Professional() {
 
 
         <h1 className="text-4xl mb-8 py-10 animate-slide-in-0.5s">Professional Projects</h1>
+        {!catalog && <CmsStatus error={error} retry={retry} />}
 
 {/*-----------------------------------------Custom Engine Category--------------------------------------------*/}
 
@@ -86,66 +91,8 @@ export default function Professional() {
           {openProject === 'custom engines' && (
             <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-
-              
-              {/* Easy to edit div objects */}
-              <Link
-                  href="/LongMarch"
-                  className="group relative block overflow-hidden aspect-square bg-white/5 hover:bg-white/10 transition-colors"
-              >
-                  <img
-                      src="/assets/images/Vertical_Capsule_748_896.png"
-                      alt="Long March"
-                      className="block w-full h-full object-cover"
-                  />
-
-                  <div className="absolute inset-0 bg-black/10 transition-colors lg:hover:bg-black/60 duration-200 ease-linear">
-                      <div className="
-                          absolute inset-0 flex flex-col items-center justify-center
-                          opacity-100 lg:opacity-0
-                          bg-black/60
-                          transition-all duration-300 ease-in-out
-                          active:opacity-0
-                          lg:group-hover:opacity-100
-                      ">
-                          <h1 className="text-white text-center text-lg">
-                              Long March
-                          </h1>
-                          <p className="text-white text-center text-sm">
-                              September 2025 - August 2026
-                          </p>
-                          <p className="text-white text-center text-sm">
-                              C++ | OpenGL
-                          </p>
-                          <p className="text-white text-center text-xs">
-                              - view -
-                          </p>
-                      </div>
-                  </div>
-            </Link>
-                  
-
-
-
-
-              <GridItem 
-                onOpenModal={openModal}
-                data={{
-                  image: "/assets/images/evergreen.png",
-                  title: "EVERGREEN",
-                  images: ["/assets/images/evergreen-menu.png", "/assets/images/evergreen.png", "/assets/images/evergreen-puzzle.png"],
-                  description: "I spent a semester working with a team of 5 on a 2.5D horror game using a custom C engine and an in-house graphics API. I learned the basics of an engine's framework, as well as some common best practices when it comes to handling and renderimg large amounts of entities. Though on a short development cycle, This was a great experience in getting used to team responsibilities and production workflows.",
-                  date: "January 2025 - April 2025 | Producer, Programmer",
-                  method: "C",
-                }}
-              />
-
-             
-
-              {/* Add more grid items as needed */}
-              
-
-            </div>
+                {catalog && <CmsGrid catalog={catalog} page="professional-projects" category="custom-engines" onOpenModal={openModal} />}
+              </div>
           </div>
           )}
         </div>
@@ -178,31 +125,7 @@ export default function Professional() {
           {openProject === 'music-nerd' && (
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/mn-web-2.png",
-                    title: "Music Nerd Website",
-                    images: ["/assets/images/mn-web-2.png"],
-                    description: "Refactored and enhanced search feature and artist pages.\n\nContributions:\n- 50% faster artist search endpoint using indexing and trigram search\n- Generated artist bios using OpenAI API\n- Wrote tests using Jest",
-                    date: "May 2025 - July 2025 | Programmer",
-                    method: "TypeScript, HTML, CSS",
-                    link: ["https://www.musicnerd.xyz/"]
-                  }}
-                />
-
-                <GridItem 
-                  onOpenModal={openModal}
-                  data={{
-                    image: "/assets/images/mn-ext.png",
-                    title: "MN Chrome Extension",
-                    images: ["/assets/images/mn-ext.png"],
-                    description: "Created, programmed, designed, and released a Chrome extension.\n\nContributions:\n- Designed UI\n- Pulled Music Nerd data from backend database \n\nDownload here: \n",
-                    date: "July 2025 - August 2025 | Programmer",
-                    method: "TypeScript, HTML, CSS",
-                    URLs: [{link: "https://chromewebstore.google.com/detail/music-nerd-chrome-extensi/hoafengifajodeelbinmgbehghofjnmd", title:"Music Nerd Chrome Extension"}]
-                  }}
-                />
+                {catalog && <CmsGrid catalog={catalog} page="professional-projects" category="web-development" onOpenModal={openModal} />}
               </div>
             </div>
           )}

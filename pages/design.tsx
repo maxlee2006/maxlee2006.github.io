@@ -1,25 +1,31 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import MediaModal from '../components/MediaModal'
-import GridItem from '../components/GridItem'
+import CmsGrid from '../components/CmsGrid'
+import CmsStatus from '../components/CmsStatus'
+import { useCatalog } from '../lib/cms/useCatalog'
+import type { CmsRecord } from '../lib/cms/content'
 
 export default function Design() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
 
-  const [selectedItem, setSelectedItem] = useState<{image: string[], title?: string, description?: string, date?: string, link?: string[]} | null>(null)
+  // Selection is temporary screen state, not a database edit. Closing a modal
+  // clears this value; changing category only changes which loaded cards appear.
+  const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
 
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category)
   }
 
-  const openModal = (item: {image: string[], title?: string, description?: string, date?: string, link?: string[]}) => {
-    setSelectedItem(item)
-  }
+  const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
-  const closeModal = () => {
-    setSelectedItem(null)
-  }
+  // Keep this function stable across renders so MediaModal's effect doesn't
+  // repeatedly tear down/recreate its focus and keyboard handling.
+  const closeModal = useCallback(() => { setSelectedItem(null) }, [])
+  // Fetch the shared catalog once per mounted page (with explicit retry).
+  // CmsGrid below selects this page/category from those validated records.
+  const { catalog, error, retry } = useCatalog()
 
   return (
     <>
@@ -61,6 +67,7 @@ export default function Design() {
         {/*-------------------------------------------------------------------------------------*/}
 
         <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">Games</h1>
+        {!catalog && <CmsStatus error={error} retry={retry} />}
 
         {/* UE5 Category */}
         <div 
@@ -85,27 +92,8 @@ export default function Design() {
           {openCategory === 'ue' && (
             <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-              {/* Easy to edit div objects */}
-
-
-              <GridItem 
-                onOpenModal={openModal}
-                data={{
-                  image: "/assets/images/UE5.gif",
-                  title: "Parkour FPS Prototype",
-                  images: ["/assets/images/UE5.gif"],
-                  description: "I spent a summer in 2024 working on a parkour FPS prototype in Unreal Engine 5. I'd previously experimented with FPS projects in the past using UE4, but after a lot more concepting and planning, I decided to try my hand at creating a more polished and playable prototype. I plan to put more work into it in the future, polishing a few animation bugs and adding more features. \n\n The biggest challenge when making this prototype ended up being the small bugs and issues piling up, not the basic mechanics themselves. Setting up animation blueprints, creating dynamic animations for walking and jumping, and various small bugs within each mechanic led to a longer dev time than I expected. \n\n When I come back to this project, I'd like to use all the architectural knowledge I've gained to smooth out the backend blueprints, and add more gameplay prototypes, such as melee weapons. \n\nAttached below is a video that shows the prototype in action, and each of its components I created. All first person models were created in Blender, and can be seen in the art portfolio section.",
-                  date: "May 2024 - Present",
-                  link: ["https://youtube.com/embed/DQ9c0tJliUY"]
-                }}
-              />
-
-             
-
-              {/* Add more grid items as needed */}
-              
-
-            </div>
+                {catalog && <CmsGrid catalog={catalog} page="design" category="ue" onOpenModal={openModal} />}
+              </div>
           </div>
           )}
         </div>

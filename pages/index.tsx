@@ -1,7 +1,14 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useCatalog } from '../lib/cms/useCatalog'
+import { articleHref } from '../lib/cms/content'
+import CmsStatus from '../components/CmsStatus'
 
 export default function Home() {
+  const { catalog, error, retry } = useCatalog()
+  // The catalog is sorted already, so the first featured article wins. Without
+  // a featured row, omit this section rather than showing stale hardcoded data.
+  const featured = catalog?.articles.find(article => article.content.featured)
   return (
     <>
       <Head>
@@ -102,10 +109,11 @@ export default function Home() {
               
             
 
-            <Link
-                href="/LongMarch"
+            {!catalog && <CmsStatus error={error} retry={retry} />}
+            {featured && (<Link
+                href={articleHref(featured.slug)}
                 style={{
-                  backgroundImage: 'url(/assets/images/Library_Hero_BIG.png)',
+                  backgroundImage: `url("${featured.content.featured_image ?? featured.content.thumbnail}")`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
@@ -115,10 +123,10 @@ export default function Home() {
 
                 <div className="relative z-10">
                     <p className="text-xl uppercase tracking-wide text-gray-300">Featured Project</p>
-                    <h1 className="text-3xl md:text-5xl font-semibold text-white">Long March</h1>
-                    <p className="mt-2 text-xl text-gray-400">Utilize four unique towers to defend your land from attackers across three levels! | Producer, Programmer</p>
+                    <h1 className="text-3xl md:text-5xl font-semibold text-white">{featured.title}</h1>
+                    <p className="mt-2 text-xl text-gray-400">{featured.content.featured_description}</p>
                 </div>
-            </Link>
+            </Link>)}
             
 
             {/*Gap in between featured project and other sections*/}

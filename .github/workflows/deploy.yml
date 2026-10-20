@@ -1,5 +1,7 @@
 name: Deploy to GitHub Pages
 
+# Pushes to main publish the live website. A feature-branch push only saves code;
+# it does not run this deployment. Database content edits need neither kind of push.
 on:
   push:
     branches: [ main ]
@@ -16,6 +18,8 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # A GitHub deployment environment groups settings/approval rules. It is
+    # unrelated to .env.local on a developer's computer or a Supabase project.
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -26,14 +30,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '24'
           cache: 'npm'
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       
+      - name: Lint and test
+        run: npm run lint && npm test
+
+      # Public configuration is embedded into exported JavaScript at build time.
+      # vars reads GitHub Actions Variables; github-pages environment values can
+      # override repository values. Neither value should be an owner/service key.
       - name: Build
-        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$NEXT_PUBLIC_SUPABASE_URL" || { echo "Set NEXT_PUBLIC_SUPABASE_URL in repository Actions variables"; exit 1; }
+          test -n "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" || { echo "Set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in repository Actions variables"; exit 1; }
+          # Read the live API first; stop on failure before building/publishing.
+          # This command never applies migrations or imports the seed.
+          npm run cms:check
+          npm run build
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
