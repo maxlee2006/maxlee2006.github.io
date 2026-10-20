@@ -4,10 +4,12 @@ A Next.js website showcasing Max Lee's projects and portfolio.
 
 ## Getting Started
 
+Requires Node.js 24. For Supabase setup, the JSON format, editing content, security rules, and a detailed file-by-file explanation, see [CMS documentation](docs/CMS.md). Apply the schema migration and import before deploying this branch.
+
 ### Install Dependencies
 
 ```bash
-npm install
+npm ci
 ```
 
 ### Run Development Server
@@ -34,6 +36,8 @@ To use:
 ## Build for Production
 
 ```bash
+npm run cms:check
 npm run build
-npm start
 ```
+
+The production output is the static `out` directory for GitHub Pages. `npm start` is not supported with static export. Run `npm run lint`, `npm test`, and `npm run test:e2e` for validation.
