@@ -38,3 +38,7 @@ next-env.d.ts
 # Browser test artifacts
 /playwright-report/
 /test-results/
+
+# Task scratch files and Supabase CLI checkout-local state
+/work/
+/supabase/.temp/
