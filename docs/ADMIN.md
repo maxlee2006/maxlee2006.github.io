@@ -6,32 +6,6 @@ Admin is a document editor that produces the same JSON the existing website alre
 
 The page follows the website's existing black-and-white palette, square borders, Funnel Display text, and Major Mono Display headings. The interface is labeled **Admin**, with concise field labels and action controls; detailed usage guidance lives in this document.
 
-## First-time login setup
-
-The username is **`super`**. The live Supabase project already has an `admin_users` table and a reserved `super` row. That row starts with no linked Auth account, so **it cannot log in yet**. No default password has been created or committed. Set the password privately:
-
-1. Open [this project's Authentication → Users](https://supabase.com/dashboard/project/vvgaalfwstwpbzzbkbtx/auth/users).
-2. Choose **Add user → Create new user**. For the Auth email identifier, enter **`super@admin.maxlee2006.github.io`**. Choose a strong, unique password. Enable **Auto Confirm User** when offered. This is an internal account identifier, not an email inbox; use direct account creation, not an email invitation.
-3. Open the project's **SQL Editor** and run this owner-only statement:
-
-   ```sql
-   update public.admin_users as admin
-   set user_id = account.id, active = true
-   from auth.users as account
-   where admin.username = 'super'
-     and lower(account.email) = 'super@admin.maxlee2006.github.io'
-   returning admin.username, admin.user_id, admin.active;
-   ```
-
-4. It must return one row with `username = super`, a nonempty `user_id`, and `active = true`. If it returns no rows, check the Auth identifier from step 2. Do not put the password in SQL or in `admin_users`.
-5. Open `/admin` on your local preview (or the website after this branch is deployed). Enter username **`super`** and the password you chose. You never need to type the internal email into the website.
-
-An Auth user is a person/account that Supabase can verify. `user_id` links the allowlist row to that exact account. The dashboard login you use to manage Supabase is separate from this website login.
-
-For another username later, create its Auth user as `USERNAME@admin.maxlee2006.github.io`, then insert its username and Auth user ID into `admin_users` using the owner dashboard. Usernames use 2–32 lowercase letters, digits, underscores, or hyphens, starting with a letter or digit. Only the owner can add or link accounts. To disable access, set the row's `active` field to false. Existing editor tabs recheck on focus and every 60 seconds.
-
-Internal identifiers have no inbox, so email password-reset links are not a recovery method for these accounts. Password recovery requires the owner using the [Supabase Auth Admin API](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid) from a trusted server, or creating a replacement Auth account and relinking the row. Never use an admin/service key in the website.
-
 ## Compose a document
 
 1. Select **Article** or **Modal**. Both use the current content format; the selection controls the preview and which table you should paste into. Switching formats preserves the current document.
