@@ -4,6 +4,8 @@ The **Admin** page is at `/admin`, with an Admin link at the bottom of the home 
 
 Admin is a document editor that produces the same JSON the existing website already reads. You can choose **Article** or **Modal**, compose text and media in order, preview the result, and copy the JSON. **It never inserts, updates, or deletes Articles or Modals.** Publishing remains a manual step in Supabase's Table Editor.
 
+The page follows the website's existing black-and-white palette, square borders, Funnel Display text, and Major Mono Display headings. The interface is labeled **Admin**, with concise field labels and action controls; detailed usage guidance lives in this document.
+
 ## First-time login setup
 
 The username is **`super`**. The live Supabase project already has an `admin_users` table and a reserved `super` row. That row starts with no linked Auth account, so **it cannot log in yet**. No default password has been created or committed. Set the password privately:
@@ -35,7 +37,7 @@ Internal identifiers have no inbox, so email password-reset links are not a reco
 1. Select **Article** or **Modal**. Both use the current content format; the selection controls the preview and which table you should paste into. Switching formats preserves the current document.
 2. Write the title. Open **Placement & thumbnail** and fill in the slug, thumbnail URL, page, category, and sort order. Category choices follow the selected page automatically.
 3. Open **Details & images** for date/role, tools/method, subtitle, description, hero image, logo image, home feature image/text, and card text overrides. Every metadata field in the current format is supported. Some fields are only displayed in articles, cards, or home features; selecting a modal does not delete those fields.
-4. Write in **Document body**. Choose a block from **Add a block here** at the position where it should appear. For an image between paragraphs, add a paragraph, an image, then another paragraph. Use the up/down arrows to reorder blocks, or **Remove** to delete one.
+4. Write in **Body**. Choose a block from **Add a block here** at the position where it should appear. For an image between paragraphs, add a paragraph, an image, then another paragraph. Use the up/down arrows to reorder blocks, or **Remove** to delete one.
 5. Watch **Preview** while you type. Use its view selector to see the article/modal, project card, or article's home feature. The preview uses the same article, modal content, and card components as the public site. The home feature illustrates the existing home layout. Panel width affects wrapping; it does not reproduce every screen size.
 
 Text is plain text, with line breaks, rather than HTML or Markdown. The format has no inline bold/italic controls. Use heading blocks for section titles. Text such as `<script>` displays literally.
@@ -59,7 +61,7 @@ For card date/method, an unchecked override inherits the main value. A checked o
 
 ## Copy and publish manually
 
-Validation messages list fields that need attention. Copy buttons become available when the whole document matches the site's current schema. The **Published flag in exported row** starts unchecked. It only changes the generated JSON, never the live database.
+Validation messages list fields that need attention. Copy buttons become available when the whole document matches the site's current schema. The **Published (export)** checkbox starts unchecked. It only changes the generated JSON, never the live database.
 
 - **Copy content JSON** copies just the object for a Supabase `content` cell. In the chosen Articles or Modals table, manually fill in `title`, `slug`, `page`, `category`, `sort_order`, and `published` as well.
 - **Copy full row** includes those placement fields plus `content`. It is a reference/full row object; do not paste the entire thing into the `content` cell. The Table Editor's content cell expects only the content object.
@@ -118,6 +120,8 @@ Stop an existing dev server before building. In an ordinary local setup, omit th
 The live `admin_users` migration was applied through the connected Supabase tool. Inspection confirmed forced RLS, SELECT only on the three allowed columns for authenticated accounts, no anonymous reads, no browser write grants, a reserved unlinked `super` row, and unchanged counts of one article and twelve modals. A live check confirmed an unrelated authenticated ID cannot see an allowlist row. Supabase's security advisor returned zero findings. Browser login tests use mocked Auth/REST responses; **a real successful `super` login still requires the owner account/password setup above**.
 
 Validation for this branch: all **13 unit/database tests** and **8 browser tests** passed, the production static export built successfully, and `cms:check` validated the live one article and twelve modals. Browser tests ran against the production export, including username login, rejected access, image ordering, both previews, clipboard contents, imported groups, mobile overflow, and sign-out when the Auth logout request fails. Desktop login/editor and mobile layouts were also inspected visually. The production build includes its normal TypeScript/Next.js lint checks.
+
+The style and copy update was checked with another successful production build, all **4 Admin browser tests**, and desktop/mobile screenshot review. It changes presentation and interface labels only.
 
 The migration file's timestamp was created by the Supabase CLI. The connected migration tool records its own remote timestamp, as it did for the earlier CMS migrations. Reconcile local and remote migration history before adopting a CLI `db push` workflow. Do not rerun the existing CMS seed or recreate the live allowlist to deploy this branch.
 

@@ -77,21 +77,18 @@ export default function Admin() {
     <Head><title>Admin | Max Lee</title><meta name="robots" content="noindex, nofollow" /><meta name="viewport" content="width=device-width, initial-scale=1" /></Head>
     <div className="admin-shell">
       <header className="admin-header">
-        <Link href="/" className="admin-brand">Max Lee <span>/ Admin</span></Link>
+        <Link href="/" className="admin-brand">Max Lee</Link>
         {user && <div className="admin-account"><span>{user.username}</span><button type="button" onClick={logout}>Sign out</button></div>}
       </header>
       {checking ? <main className="admin-login"><p role="status">Checking access…</p></main> : user ? <DocumentEditor /> : <main className="admin-login">
         <div className="admin-login-card">
-          <span className="admin-eyebrow">CONTENT STUDIO</span>
-          <h1>Welcome back.</h1>
-          <p>Sign in to write articles, compose modals, and preview your next project.</p>
+          <h1>Admin</h1>
           <form onSubmit={login}>
             <label className="admin-field">Username<input name="username" type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} defaultValue="super" required /></label>
             <label className="admin-field">Password<input name="password" type="password" autoComplete="current-password" required /></label>
             {error && <p role="alert" className="admin-error">{error}</p>}
-            <button className="admin-primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in to Admin →'}</button>
+            <button className="admin-primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
           </form>
-          <p className="admin-footnote">Access is limited to approved admin accounts.</p>
         </div>
       </main>}
     </div>

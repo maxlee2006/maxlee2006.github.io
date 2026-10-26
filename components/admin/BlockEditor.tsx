@@ -45,7 +45,7 @@ export default function BlockEditor({ body, onChange, depth = 0, path = 'body' }
           {block.type === 'heading' && <GrowingText heading label={`Heading ${label}`} value={block.text} placeholder="Section heading" onChange={text => replace(index, { ...block, text })} />}
           {block.type === 'image' && <div className="admin-field-grid">
             <TextField label="Image URL" value={block.src} placeholder="https://… or /assets/images/…" onChange={src => replace(index, { ...block, src })} />
-            <TextField label="Alt text" value={block.alt} hint="Describe the image for someone who cannot see it." onChange={alt => replace(index, { ...block, alt })} />
+            <TextField label="Alt text" value={block.alt} onChange={alt => replace(index, { ...block, alt })} />
             <TextField label="Caption" multiline value={block.caption ?? ''} onChange={caption => replace(index, { ...block, caption: caption || undefined })} />
           </div>}
           {block.type === 'link' && <div className="admin-field-grid">
@@ -53,9 +53,9 @@ export default function BlockEditor({ body, onChange, depth = 0, path = 'body' }
             <TextField label="Link URL" value={block.href} onChange={href => replace(index, { ...block, href })} />
           </div>}
           {block.type === 'embed' && <div className="admin-field-grid">
-            <TextField label="Embed URL" value={block.src} hint="YouTube /embed/ID, Steam /widget/ID/, or the supported MusicNerd embed." onChange={src => replace(index, { ...block, src })} />
+            <TextField label="Embed URL" value={block.src} placeholder="https://www.youtube.com/embed/…" onChange={src => replace(index, { ...block, src })} />
             <TextField label="Embed title" value={block.title} onChange={title => replace(index, { ...block, title })} />
-            <Field label="Embed height (px)" hint="100–1000; leave empty for a 16:9 frame."><input type="number" min={100} max={1000} value={block.height ?? ''} onChange={event => replace(index, { ...block, height: event.target.value === '' ? undefined : Number(event.target.value) })} /></Field>
+            <Field label="Embed height (px)"><input type="number" min={100} max={1000} placeholder="Auto" value={block.height ?? ''} onChange={event => replace(index, { ...block, height: event.target.value === '' ? undefined : Number(event.target.value) })} /></Field>
           </div>}
           {block.type === 'group' && <>
             <Field label="Group layout"><select value={block.layout} onChange={event => replace(index, { ...block, layout: event.target.value as typeof block.layout })}>

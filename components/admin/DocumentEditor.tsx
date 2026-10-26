@@ -37,7 +37,7 @@ export default function DocumentEditor() {
     const text = JSON.stringify(output[scope], null, 2)
     try {
       await navigator.clipboard.writeText(text)
-      setMessage(scope === 'content' ? `Content JSON copied. Paste into the ${kind}.content cell.` : `Full row JSON copied for ${kind}.`)
+      setMessage(scope === 'content' ? 'Content JSON copied.' : 'Full row JSON copied.')
     } catch {
       // Clipboard access can be denied by browser settings. Keep the exact text
       // visible and selectable, so copying manually always remains possible.
@@ -50,7 +50,7 @@ export default function DocumentEditor() {
     try {
       const next = importDocument(importText, record)
       if (dirty && !window.confirm('Replace this document with the imported JSON? Copy your current work first.')) return
-      update(next); setImporting(false); setImportText(''); setMessage('JSON imported into this editor only.')
+      update(next); setImporting(false); setImportText(''); setMessage('JSON imported.')
     } catch (err) {
       // Zod errors can contain long nested details; keep them readable here.
       setMessage(err instanceof Error ? `Could not import: ${err.message}` : 'Could not import JSON.')
@@ -65,51 +65,50 @@ export default function DocumentEditor() {
   ]
 
   return <main className="admin-workspace">
-    <div className="admin-workspace-heading"><div><span className="admin-eyebrow">CONTENT STUDIO</span><h1>Make something worth sharing.</h1><p>Write. Preview. Copy your JSON when it’s ready.</p></div>
+    <div className="admin-workspace-heading"><h1>Admin</h1>
       <div className="admin-actions"><button type="button" onClick={() => setImporting(value => !value)}>Import JSON</button><button type="button" onClick={() => {
         if (!dirty || window.confirm('Start a new document? Copy your current work first.')) { setRecord(newDocument()); setDirty(false); setMessage('') }
       }}>New document</button></div>
     </div>
-    <div className="admin-document-bar"><label>Format <select aria-label="Document format" value={kind} onChange={event => setKind(event.target.value as EditorKind)}><option value="Articles">Article</option><option value="Modals">Modal</option></select></label><span className="admin-local-status">● Local draft · copy to keep</span></div>
-    {importing && <section className="admin-import" aria-label="Import JSON"><p>Paste a content object or full row from {kind}. Importing only changes this local document.</p><textarea aria-label="JSON to import" rows={7} value={importText} onChange={event => setImportText(event.target.value)} /><div className="admin-actions"><button type="button" onClick={loadJson}>Load JSON</button><button type="button" onClick={() => setImporting(false)}>Cancel</button></div></section>}
+    <div className="admin-document-bar"><label>Format <select aria-label="Document format" value={kind} onChange={event => setKind(event.target.value as EditorKind)}><option value="Articles">Article</option><option value="Modals">Modal</option></select></label><span className="admin-local-status" title="Copy JSON before leaving to keep your changes.">Local draft</span></div>
+    {importing && <section className="admin-import" aria-label="Import JSON"><textarea aria-label="JSON to import" placeholder="Paste content JSON or a full row" rows={7} value={importText} onChange={event => setImportText(event.target.value)} /><div className="admin-actions"><button type="button" onClick={loadJson}>Load JSON</button><button type="button" onClick={() => setImporting(false)}>Cancel</button></div></section>}
     <div className="admin-columns">
       <section className="admin-compose" aria-label="Document editor">
-        <div className="admin-panel-title"><span>01 / COMPOSE</span><small>Plain text & media</small></div>
+        <div className="admin-panel-title"><h2>Editor</h2></div>
         <div className="admin-document">
           <GrowingText heading label="Document title" placeholder="Untitled project" value={record.title} onChange={title => update({ ...record, title })} />
-          <details className="admin-details" open><summary>Placement & thumbnail <span>Required</span></summary><div className="admin-field-grid">
-            <TextField label="Slug" value={record.slug} hint="Lowercase words separated by hyphens, e.g. my-project." onChange={slug => update({ ...record, slug })} />
-            <TextField label="Thumbnail URL" value={record.content.thumbnail} hint="HTTPS URL or /assets/images/…" onChange={thumbnail => contentField('thumbnail', thumbnail)} />
+          <details className="admin-details" open><summary>Placement & thumbnail</summary><div className="admin-field-grid">
+            <TextField label="Slug" value={record.slug} placeholder="my-project" onChange={slug => update({ ...record, slug })} />
+            <TextField label="Thumbnail URL" value={record.content.thumbnail} placeholder="https://… or /assets/images/…" onChange={thumbnail => contentField('thumbnail', thumbnail)} />
             <Field label="Page"><select value={record.page} onChange={event => {
               const page = event.target.value as EditorRecord['page']
               update({ ...record, page, category: placements[page][0] })
             }}>{Object.keys(placements).map(page => <option key={page} value={page}>{page}</option>)}</select></Field>
             <Field label="Category"><select value={record.category} onChange={event => update({ ...record, category: event.target.value })}>{placements[record.page].map(category => <option key={category}>{category}</option>)}</select></Field>
             <Field label="Sort order"><input type="number" step={1} value={record.sort_order} onChange={event => update({ ...record, sort_order: Number(event.target.value) })} /></Field>
-            <label className="admin-check"><input type="checkbox" checked={record.published} onChange={event => update({ ...record, published: event.target.checked })} />Published flag in exported row</label>
+            <label className="admin-check"><input type="checkbox" checked={record.published} onChange={event => update({ ...record, published: event.target.checked })} />Published (export)</label>
           </div></details>
-          <details className="admin-details"><summary>Details & images <span>Optional</span></summary><div className="admin-field-grid">
+          <details className="admin-details"><summary>Details & images</summary><div className="admin-field-grid">
             {metadataFields.map(({ key, label }) => <TextField key={key} label={label} multiline={key === 'description' || key === 'featured_description' || key === 'subtitle'} value={record.content[key] ?? ''} onChange={value => contentField(key, key.endsWith('_image') ? value || undefined : value)} />)}
             {/* Empty card overrides are meaningful: they deliberately hide the
                 date/method on the card. A checkbox distinguishes empty from
                 absent (absent inherits the main date/method). */}
             {(['card_date', 'card_method'] as const).map(key => <div key={key}>
               <label className="admin-check"><input type="checkbox" checked={record.content[key] !== undefined} onChange={event => contentField(key, event.target.checked ? '' : undefined)} />Override card {key === 'card_date' ? 'date' : 'method'}</label>
-              {record.content[key] !== undefined && <TextField label={key === 'card_date' ? 'Card date' : 'Card method'} value={record.content[key] ?? ''} onChange={value => contentField(key, value)} hint="An empty override hides this text on the card." />}
+              {record.content[key] !== undefined && <TextField label={key === 'card_date' ? 'Card date' : 'Card method'} value={record.content[key] ?? ''} onChange={value => contentField(key, value)} />}
             </div>)}
             <label className="admin-check"><input type="checkbox" checked={record.content.featured} onChange={event => contentField('featured', event.target.checked)} />Featured on home page (articles)</label>
           </div></details>
-          <div className="admin-body-heading"><h2>Document body</h2><p>Add blocks anywhere. Use the arrows to change their order.</p></div>
+          <div className="admin-body-heading"><h2>Body</h2></div>
           <BlockEditor body={record.content.body} onChange={body => contentField('body', body)} />
         </div>
       </section>
       <aside className="admin-review" aria-label="Preview and export">
-        <div className="admin-panel-title"><span>02 / REVIEW</span><div className="admin-tabs"><button type="button" aria-pressed={tab === 'preview'} onClick={() => setTab('preview')}>Preview</button><button type="button" aria-pressed={tab === 'json'} onClick={() => setTab('json')}>JSON</button></div></div>
+        <div className="admin-panel-title"><h2>Output</h2><div className="admin-tabs"><button type="button" aria-pressed={tab === 'preview'} onClick={() => setTab('preview')}>Preview</button><button type="button" aria-pressed={tab === 'json'} onClick={() => setTab('json')}>JSON</button></div></div>
         {tab === 'preview' ? <DocumentPreview record={record} kind={kind} /> : <div className="admin-json"><Field label="JSON to display"><select value={jsonScope} onChange={event => setJsonScope(event.target.value as typeof jsonScope)}><option value="content">Content cell</option><option value="row">Full row</option></select></Field><textarea aria-label="Generated JSON" readOnly value={json} spellCheck={false} rows={24} /></div>}
         <div className="admin-export">
-          {!validation.success ? <div className="admin-validation"><p>Complete these fields to export:</p><ul>{validation.error.issues.map((issue, index) => <li key={index}><strong>{issue.path.join('.')}</strong>: {issue.message}</li>)}</ul></div> : <p className="admin-valid">✓ JSON matches the website format</p>}
+          {!validation.success && <div className="admin-validation"><p>Required fields:</p><ul>{validation.error.issues.map((issue, index) => <li key={index}><strong>{issue.path.join('.')}</strong>: {issue.message}</li>)}</ul></div>}
           <div className="admin-actions"><button type="button" className="admin-primary" disabled={!output} onClick={() => copy('content')}>Copy content JSON</button><button type="button" disabled={!output} onClick={() => copy('row')}>Copy full row</button></div>
-          <p className="admin-footnote">Paste content JSON into the <code>content</code> cell of <strong>{kind}</strong>. Full row JSON also includes title, slug, placement, and the published flag. Nothing is saved to the database here.</p>
           {message && <p role="status" className="admin-message">{message}</p>}
         </div>
       </aside>

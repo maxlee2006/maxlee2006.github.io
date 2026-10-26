@@ -40,7 +40,7 @@ async function login(page: Page, path = '/admin') {
   await page.goto(path)
   await expect(page.getByLabel('Username', { exact: true })).toHaveValue('super')
   await page.getByLabel('Password', { exact: true }).fill('test-password-only')
-  await page.getByRole('button', { name: 'Sign in to Admin' }).click()
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click()
 }
 
 test('login rejects bad passwords and users who are not on the admin allowlist', async ({ page }) => {
