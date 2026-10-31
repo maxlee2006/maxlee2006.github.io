@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { isSafeEmbed, isSafeUrl, recordSchema, articleHref } from '../lib/cms/content'
+import { isSafeEmbed, isSafeUrl, recordSchema, recordSchemaFor, articleHref, categorySchema } from '../lib/cms/content'
+import { originalCategories } from '../lib/cms/categories'
 
 const seed = JSON.parse(readFileSync(new URL('../supabase/seed.json', import.meta.url), 'utf8'))
 test('the complete original content import validates', () => {
@@ -30,10 +31,62 @@ test('invalid content is rejected rather than silently lost', () => {
   for (const block of [{ type: 'raw-html', html: '<script />' }, { type: 'image', src: 'javascript:alert(1)', alt: '' }, { type: 'embed', src: 'https://evil.example', title: '' }]) {
     assert.equal(recordSchema.safeParse({ ...seed.Articles[0], content: { ...seed.Articles[0].content, body: [block] } }).success, false)
   }
-  assert.equal(recordSchema.safeParse({ ...seed.Articles[0], category: 'typo' }).success, false)
+  assert.equal(recordSchemaFor(originalCategories).safeParse({ ...seed.Articles[0], category: 'typo' }).success, false)
   assert.equal(recordSchema.safeParse({ ...seed.Articles[0], published: false }).success, false)
+})
+
+test('database categories extend placements while rejecting missing or wrong-page categories', () => {
+  const extra = categorySchema.parse({ page: 'portfolio', slug: 'new-category', title: 'New category' })
+  const schema = recordSchemaFor([...originalCategories, extra])
+  assert.equal(schema.safeParse({ ...seed.Articles[0], page: 'portfolio', category: extra.slug }).success, true)
+  assert.equal(schema.safeParse({ ...seed.Articles[0], page: 'design', category: extra.slug }).success, false)
+  assert.equal(categorySchema.safeParse({ ...extra, image: 'javascript:alert(1)' }).success, false)
 })
 test('article links preserve the existing URL and encode new slugs', () => {
   assert.equal(articleHref('long-march'), '/LongMarch')
   assert.equal(articleHref('another-article'), '/articles?slug=another-article')
+})
+
+test('code samples and button grids validate in order and in groups for both tables', () => {
+  const blocks = [
+    { type: 'paragraph', text: 'Before' },
+    { type: 'code', code: '#include <iostream>\nint main() { return 0; }', language: 'cpp', filename: 'main.cpp' },
+    { type: 'buttons', buttons: [
+      { text: 'Long March', article: 'long-march', image: '/assets/images/DMT.png' },
+      { text: 'Another article', article: 'another-article' },
+      { text: 'Source code', href: 'https://github.com/example/project', image: 'https://example.com/image.png' },
+      { text: 'All articles', href: '/articles' },
+    ] },
+    { type: 'group', layout: 'text', body: [{ type: 'code', code: 'plain text' }] },
+    { type: 'paragraph', text: 'After' },
+  ]
+  for (const row of [seed.Articles[0], seed.Modals[0]]) {
+    const record = recordSchema.parse({ ...row, content: { ...row.content, body: blocks } })
+    assert.deepEqual(record.content.body, blocks)
+  }
+})
+
+test('button grids reject unsafe URLs, ambiguous destinations, and invalid arrays', () => {
+  const invalidButtons = [
+    { text: 'Missing destination' },
+    { text: 'Both', article: 'long-march', href: 'https://example.com' },
+    { text: 'Invalid slug', article: '../other' },
+    { text: 'Script', href: 'javascript:alert(1)' },
+    { text: 'Ambiguous', href: '//evil.example' },
+    { text: 'Bad image', article: 'long-march', image: 'data:image/svg+xml,<svg/>' },
+    { text: 'Bad image', href: '/articles', image: 'https://user:password@example.com/image.png' },
+    { text: ' ', href: '/articles' },
+  ]
+  for (const buttons of [[], ...invalidButtons.map(button => [button]), Array(101).fill({ text: 'Link', href: '/articles' })]) {
+    assert.equal(recordSchema.safeParse({ ...seed.Articles[0], content: { ...seed.Articles[0].content, body: [{ type: 'buttons', buttons }] } }).success, false)
+  }
+})
+
+test('code requires source text, allows unknown language fallback, and bounds sample size', () => {
+  for (const block of [{ type: 'code' }, { type: 'code', code: 42 }, { type: 'code', code: 'x'.repeat(100001) }, { type: 'code', code: '', language: '' }]) {
+    assert.equal(recordSchema.safeParse({ ...seed.Articles[0], content: { ...seed.Articles[0].content, body: [block] } }).success, false)
+  }
+  for (const block of [{ type: 'code', code: '' }, { type: 'code', code: '<script>alert(1)</script>', language: 'future-language' }]) {
+    assert.equal(recordSchema.safeParse({ ...seed.Articles[0], content: { ...seed.Articles[0].content, body: [block] } }).success, true)
+  }
 })

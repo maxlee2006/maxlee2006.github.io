@@ -2,21 +2,16 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import MediaModal from '../components/MediaModal'
-import CmsGrid from '../components/CmsGrid'
+import CategorySections from '../components/CategorySections'
 import CmsStatus from '../components/CmsStatus'
 import { useCatalog } from '../lib/cms/useCatalog'
 import type { CmsRecord } from '../lib/cms/content'
 
 export default function Design() {
-  const [openCategory, setOpenCategory] = useState<string | null>(null)
 
   // Selection is temporary screen state, not a database edit. Closing a modal
   // clears this value; changing category only changes which loaded cards appear.
   const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
-
-  const toggleCategory = (category: string) => {
-    setOpenCategory(openCategory === category ? null : category)
-  }
 
   const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
@@ -68,41 +63,7 @@ export default function Design() {
 
         <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">Games</h1>
         {!catalog && <CmsStatus error={error} retry={retry} />}
-
-        {/* UE5 Category */}
-        <div 
-        className="mb-4 animate-slide-in-0.6s">
-          
-          <button
-            onClick={() => toggleCategory('ue')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/ue-still.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Unreal Engine 5</h2>
-            <span className="relative z-10 text-2xl text-white">
-              {openCategory === 'ue' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openCategory === 'ue' && (
-            <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                {catalog && <CmsGrid catalog={catalog} page="design" category="ue" onOpenModal={openModal} />}
-              </div>
-          </div>
-          )}
-        </div>
-
-
-{/*-------------------------------------------------------------------------------------*/}
-
-
-
+        {catalog && <CategorySections catalog={catalog} page="design" onOpenModal={openModal} />}
 
         {/* Contact Section */}
         <div className="mt-8 pt-8 border-t border-gray-700">

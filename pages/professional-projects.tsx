@@ -2,20 +2,15 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import MediaModal from '../components/MediaModal'
-import CmsGrid from '../components/CmsGrid'
+import CategorySections from '../components/CategorySections'
 import CmsStatus from '../components/CmsStatus'
 import { useCatalog } from '../lib/cms/useCatalog'
 import type { CmsRecord } from '../lib/cms/content'
 
 export default function Professional() {
-  const [openProject, setOpenProject] = useState<string | null>(null)
   // Selection is temporary screen state, not a database edit. Closing a modal
   // clears this value; changing category only changes which loaded cards appear.
   const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
-
-  const toggleProject = (project: string) => {
-    setOpenProject(openProject === project ? null : project)
-  }
 
   const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
@@ -64,74 +59,7 @@ export default function Professional() {
 
         <h1 className="text-4xl mb-8 py-10 animate-slide-in-0.5s">Professional Projects</h1>
         {!catalog && <CmsStatus error={error} retry={retry} />}
-
-{/*-----------------------------------------Custom Engine Category--------------------------------------------*/}
-
-
-<div 
-        className="mb-4 animate-slide-in-0.6s">
-          
-          <button
-            onClick={() => toggleProject('custom engines')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/Screenshot_02.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-          
-          <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-          <h2 className="relative z-10 text-3xl font-semibold text-white">Custom Engines</h2>
-          <span className="relative z-10 text-2xl text-white">
-              {openProject === 'custom engines' ? '−' : '+'}
-          </span>
-          </button>
-          
-          {openProject === 'custom engines' && (
-            <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                {catalog && <CmsGrid catalog={catalog} page="professional-projects" category="custom-engines" onOpenModal={openModal} />}
-              </div>
-          </div>
-          )}
-        </div>
-
-
-{/*--------------------------------------Web Development-----------------------------------------------*/}
-
-
-        <div className="mb-4 animate-slide-in-0.6s">
-          <button
-            onClick={() => toggleProject('music-nerd')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/mn-web.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'top',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <div className="relative z-10 flex items-center gap-3">
-              <img src="/assets/images/mn-logo-128.png" alt="" className="w-8 h-8" />
-              <h2 className="text-3xl font-semibold text-white">Web Development</h2>
-            </div>
-            <span className="relative z-10 text-2xl text-white">
-              {openProject === 'music-nerd' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openProject === 'music-nerd' && (
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                {catalog && <CmsGrid catalog={catalog} page="professional-projects" category="web-development" onOpenModal={openModal} />}
-              </div>
-            </div>
-          )}
-        </div>
-
-
+        {catalog && <CategorySections catalog={catalog} page="professional-projects" onOpenModal={openModal} />}
 
 {/*-----------------------------------------Contact Info--------------------------------------------*/}
 

@@ -3,20 +3,15 @@ import Link from 'next/link'
 import { useCallback, useState } from 'react'
 
 import MediaModal from '../components/MediaModal'
-import CmsGrid from '../components/CmsGrid'
+import CategorySections from '../components/CategorySections'
 import CmsStatus from '../components/CmsStatus'
 import { useCatalog } from '../lib/cms/useCatalog'
 import type { CmsRecord } from '../lib/cms/content'
 
 export default function Portfolio() {
-  const [openCategory, setOpenCategory] = useState<string | null>(null)
   // Selection is temporary screen state, not a database edit. Closing a modal
   // clears this value; changing category only changes which loaded cards appear.
   const [selectedItem, setSelectedItem] = useState<CmsRecord | null>(null)
-
-  const toggleCategory = (category: string) => {
-    setOpenCategory(openCategory === category ? null : category)
-  }
 
   const openModal = (item: CmsRecord) => { setSelectedItem(item) }
 
@@ -70,107 +65,7 @@ export default function Portfolio() {
 
         <h1 className="text-5xl mb-8 py-10 animate-slide-in-0.5s">ART</h1>
         {!catalog && <CmsStatus error={error} retry={retry} />}
-
-
-{/*-------------------------------------------------------------------------------------*/}
-
-
-        {/* Modeling Category */}
-        <div 
-        className="mb-4 animate-slide-in-0.6s">
-          <button
-            onClick={() => toggleCategory('modeling')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/vicar-head.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Modeling</h2>
-            <span className=" relative z-10 text-2xl text-white">
-              {openCategory === 'modeling' ? '−' : '+'}
-            </span>
-          </button>
-          
-          {openCategory === 'modeling' && (
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-                {catalog && <CmsGrid catalog={catalog} page="portfolio" category="modeling" onOpenModal={openModal} />}
-              </div>
-            </div>
-          )}
-        </div>
-
-
-{/*-------------------------------------------------------------------------------------*/}
-
-
-        {/* Animation Category */}
-        <div className="mb-4 animate-slide-in-0.6s">
-        <button
-            onClick={() => toggleCategory('animation')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/DMT.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Animations</h2>
-            <span className=" relative z-10 text-2xl text-white">
-              {openCategory === 'animation' ? '−' : '+'}
-            </span>
-          </button>
-          {openCategory === 'animation' && (
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
-                {catalog && <CmsGrid catalog={catalog} page="portfolio" category="animation" onOpenModal={openModal} />}
-              </div>
-            </div>
-          )}
-        </div>
-
-
-{/*-------------------------------------------------------------------------------------*/}
-
-
-        {/* Sketches Category */}
-        <div className="mb-4 animate-slide-in-0.6s">
-          <button
-            onClick={() => toggleCategory('sketches')}
-            className="relative w-full px-6 h-60 py-5 text-left transition-colors flex justify-between items-end border-b border-white overflow-hidden"
-            style={{
-              backgroundImage: 'url(/assets/images/bg-notxt.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60 transition-colors hover:bg-black/40 duration-200 ease-linear"></div>
-            
-            <h2 className="relative z-10 text-3xl font-semibold text-white">Sketches</h2>
-            <span className="relative z-10 text-2xl text-white">
-              {openCategory === 'sketches' ? '−' : '+'}
-            </span>
-          </button>
-          {openCategory === 'sketches' && (
-            <div className="p-6">
-              <div className="space-y-4">
-                <CmsGrid catalog={catalog ?? { articles: [], modals: [] }} page="portfolio" category="sketches" onOpenModal={openModal} />
-                <div className="p-4">
-                  <h3 className="text-xl mb-2">Sketches</h3>
-                  <p className="text-gray-300">Under Construction.</p>
-                  <img src="/assets/images/BLENDER.gif" alt="Sketch" className="mt-3 max-w-full h-auto rounded" />
-                </div>
-                {/* Add more divs as needed */}
-              </div>
-            </div>
-          )}
-        </div>
+        {catalog && <CategorySections catalog={catalog} page="portfolio" onOpenModal={openModal} />}
 
         {/* Contact Section */}
         <div className="mt-8 pt-8 border-t border-gray-700">

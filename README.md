@@ -8,7 +8,9 @@ Requires Node.js 24. New to the CMS? Start with [the beginner walkthrough](docs/
 
 For Supabase setup, the JSON format, editing content, security rules, and a detailed file-by-file explanation, see [CMS documentation](docs/CMS.md). Live database setup is already complete for this branch. The setup instructions are for reference; do not re-import content to preview or deploy it.
 
-For the username-protected **Admin** document editor at `/admin`, see [Admin setup and usage](docs/ADMIN.md). Username `super` is reserved in the new Supabase `admin_users` table; the owner must create/link its Auth account and choose a password privately. The editor previews articles/modals and copies JSON for manual pasting. It never writes content to the database. Website changes are on `feat/admin-document-editor` and are not deployed.
+Articles and modals support [syntax-highlighted code samples](docs/CMS.md#code-samples-in-articles-and-modals) and [button grids](docs/CMS.md#button-grids-between-content-blocks) within their ordered `content.body` arrays. The CMS guide includes JSON examples for both.
+
+For the username-protected **Admin** editor at `/admin`, see [Admin setup and usage](docs/ADMIN.md). Active admins can create categories, save draft or published articles/modals, and reopen saved documents. JSON import/export and live previews remain available. The owner manages admin accounts separately in Supabase.
 
 ### Install Dependencies
 

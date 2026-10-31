@@ -1,6 +1,7 @@
 import { loadEnvConfig } from '@next/env'
 import { createClient } from '@supabase/supabase-js'
-import { recordSchema } from '../lib/cms/content'
+import { recordSchemaFor } from '../lib/cms/content'
+import { readCategories } from '../lib/cms/categories'
 
 // Command-line preflight, not code shipped to the browser. Use the same .env
 // loading rules as Next.js; GitHub Actions can supply the values directly.
@@ -11,6 +12,9 @@ async function main() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   if (!url || !key) throw new Error('Missing public Supabase configuration')
   const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
+  const categories = await readCategories()
+  const recordSchema = recordSchemaFor(categories)
+  console.log(`Categories: ${categories.length} validated`)
   // Read via the public API just like a visitor, including batching, ordering,
   // timeout, and runtime JSON validation. A successful build alone cannot prove
   // this path works: static export doesn't fetch articles during compilation.

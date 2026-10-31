@@ -1,17 +1,10 @@
-import { recordSchema, type CmsRecord, type ContentBlock } from './content'
+import { buttonSchema, isSafeEmbed, isSafeUrl, recordSchema, recordSchemaFor, type Category, type CmsRecord, type ContentBlock } from './content'
 
-// These names match the actual Supabase tables. The editor never calls them;
-// it uses this choice to label the preview and manual-paste instructions.
+// Names of the tables used for preview, import/export, and authenticated saves.
 export type EditorKind = 'Articles' | 'Modals'
 // Public records are always published=true. A local document can be a draft,
 // so only that one field needs a different type in the editor.
 export type EditorRecord = Omit<CmsRecord, 'published'> & { published: boolean }
-
-export const placements = {
-  portfolio: ['modeling', 'animation', 'sketches'],
-  design: ['ue'],
-  'professional-projects': ['custom-engines', 'web-development'],
-} as const
 
 export function newDocument(): EditorRecord {
   // Empty required values make validation explain what still needs filling in.
@@ -33,15 +26,41 @@ export function newBlock(type: ContentBlock['type']): ContentBlock {
     case 'heading': return { type, text: '' }
     case 'image': return { type, src: '', alt: '' }
     case 'link': return { type, href: '', text: '' }
+    case 'code': return { type, code: '', language: 'text' }
+    case 'buttons': return { type, buttons: [{ text: '', href: '' }] }
     case 'embed': return { type, src: '', title: '' }
     case 'group': return { type, layout: 'text', body: [] }
   }
 }
 
+// Drafts contain unfinished fields. Preview only safe destinations, and omit
+// unfinished images while retaining a valid button's black background. Export
+// still validates the complete document, so no field is silently lost there.
+export function previewBlocks(body: ContentBlock[]): ContentBlock[] {
+  return body.flatMap<ContentBlock>(block => {
+    if (block.type === 'group') return [{ ...block, body: previewBlocks(block.body) }]
+    if (block.type === 'image' && !isSafeUrl(block.src)) return []
+    if (block.type === 'link' && !isSafeUrl(block.href)) return []
+    if (block.type === 'buttons') {
+      const buttons = block.buttons.flatMap(button => {
+        const parsed = buttonSchema.safeParse({ ...button, image: undefined })
+        if (!parsed.success) return []
+        return [{ ...parsed.data, image: button.image && isSafeUrl(button.image) ? button.image : undefined }]
+      })
+      return buttons.length ? [{ ...block, buttons }] : []
+    }
+    if (block.type === 'embed') {
+      if (!isSafeEmbed(block.src)) return []
+      return [{ ...block, height: block.height && Number.isInteger(block.height) && block.height >= 100 && block.height <= 1000 ? block.height : undefined }]
+    }
+    return [block]
+  })
+}
+
 // The public schema deliberately accepts published rows only. Validate a draft
 // against all the same content rules, then restore its chosen published flag.
-export function validateDocument(record: EditorRecord) {
-  return recordSchema.safeParse({ ...record, published: true })
+export function validateDocument(record: EditorRecord, categories?: Category[]) {
+  return (categories ? recordSchemaFor(categories) : recordSchema).safeParse({ ...record, published: true })
 }
 
 export function exportDocument(record: EditorRecord): { row: EditorRecord; content: CmsRecord['content'] } {

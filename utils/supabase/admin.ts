@@ -14,7 +14,8 @@ export function usernameIdentifier(username: string): string {
 }
 
 // Separate from the public catalog client: admin sessions stay in this tab and
-// never change the public reader's permissions or enable content writes.
+// never change the public reader's permissions. Active-admin content saves
+// use this client's token and are independently authorized by database RLS.
 export function createAdminClient(): SupabaseClient {
   if (client) return client
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
