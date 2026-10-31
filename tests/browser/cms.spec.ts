@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
+import { originalCategories } from '../../lib/cms/categories'
 
 const seed = JSON.parse(readFileSync('supabase/seed.json', 'utf8'))
 // Intercept the browser's HTTP requests and answer with local fixtures. This
@@ -11,8 +12,9 @@ async function mockDatabase(page: Page, data = seed) {
     if (url.hostname === '127.0.0.1' || url.hostname === 'localhost') return route.continue()
     if (url.pathname.startsWith('/rest/v1/')) {
       expect(route.request().method()).toBe('GET')
-      expect(url.searchParams.get('published')).toBe('eq.true')
       const table = url.pathname.split('/').pop()!
+      if (table === 'categories') return route.fulfill({ json: data.categories ?? originalCategories, headers: { 'access-control-allow-origin': '*' } })
+      expect(url.searchParams.get('published')).toBe('eq.true')
       return route.fulfill({ json: data[table], headers: { 'access-control-allow-origin': '*' } })
     }
     return route.abort()

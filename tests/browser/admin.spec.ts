@@ -1,10 +1,16 @@
 import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
+import { originalCategories } from '../../lib/cms/categories'
+import type { Category } from '../../lib/cms/content'
+import { newDocument, type EditorRecord } from '../../lib/cms/editor'
+
+type MockDatabase = { categories: Category[]; Articles: EditorRecord[]; Modals: EditorRecord[] }
+const emptyDatabase = (): MockDatabase => ({ categories: originalCategories.map(category => ({ ...category })), Articles: [], Modals: [] })
 
 // Fake only the HTTP boundary. The page still runs the real Supabase client,
 // session handling, allowlist lookup, editor state, validation, and renderers.
 // These tests never create accounts or write production content.
-async function mockAdmin(page: Page, { allowed = true, wrongPassword = false } = {}) {
+async function mockAdmin(page: Page, { allowed = true, wrongPassword = false, database = emptyDatabase(), failWrites = false } = {}) {
   const user = { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated', email: 'super@admin.maxlee2006.github.io', app_metadata: { provider: 'email' }, user_metadata: {}, created_at: '2026-10-25T00:00:00Z' }
   const payload = { sub: user.id, aud: 'authenticated', role: 'authenticated', email: user.email, exp: Math.floor(Date.now() / 1000) + 3600 }
   const token = `${Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url')}.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.test-signature`
@@ -27,9 +33,32 @@ async function mockAdmin(page: Page, { allowed = true, wrongPassword = false } =
       expect(request.headers().authorization).toBe(`Bearer ${token}`)
       return route.fulfill({ json: allowed ? [{ user_id: user.id, username: 'super', active: true }] : [], headers })
     }
-    if (/\/rest\/v1\/(Articles|Modals)/.test(url.pathname)) {
-      if (request.method() !== 'GET') contentWrites.push(request.method())
-      return route.fulfill({ json: [], headers })
+    if (url.pathname === '/rest/v1/categories') {
+      if (request.method() === 'GET') return route.fulfill({ json: database.categories, headers })
+      expect(request.method()).toBe('POST')
+      expect(request.headers().authorization).toBe(`Bearer ${token}`)
+      const row = request.postDataJSON()
+      if (database.categories.some(category => category.page === row.page && category.slug === row.slug)) return route.fulfill({ status: 409, json: { code: '23505', message: 'duplicate' }, headers })
+      database.categories.push(row)
+      return route.fulfill({ status: 201, json: row, headers })
+    }
+    if (/\/rest\/v1\/(Articles|Modals)$/.test(url.pathname)) {
+      const table = url.pathname.split('/').pop() as 'Articles' | 'Modals'
+      if (request.method() === 'GET') return route.fulfill({ json: database[table].filter(row => url.searchParams.get('published') !== 'eq.true' || row.published), headers })
+      contentWrites.push(request.method())
+      expect(request.headers().authorization).toBe(`Bearer ${token}`)
+      if (failWrites) return route.fulfill({ status: 503, json: { code: 'unavailable', message: 'Unavailable' }, headers })
+      const row = request.postDataJSON() as EditorRecord
+      const originalSlug = url.searchParams.get('slug')?.replace(/^eq\./, '')
+      if (database[table].some(existing => existing.slug === row.slug && existing.slug !== originalSlug)) return route.fulfill({ status: 409, json: { code: '23505', message: 'duplicate' }, headers })
+      if (request.method() === 'POST') database[table].push(row)
+      else {
+        expect(request.method()).toBe('PATCH')
+        const index = database[table].findIndex(existing => existing.slug === originalSlug)
+        if (index === -1) return route.fulfill({ status: 406, json: { code: 'PGRST116', message: 'Missing row' }, headers })
+        database[table][index] = row
+      }
+      return route.fulfill({ json: row, headers })
     }
     return route.abort()
   })
@@ -233,4 +262,85 @@ test('imported nested code and button grids remain editable and export without d
     { type: 'buttons', buttons: [{ text: 'Updated project', article: 'another-project' }] },
   ] }])
   expect(writes).toEqual([])
+})
+
+for (const target of ['portfolio', 'design', 'professional-projects'] as const) test(`admins create a ${target} category and save, reopen, and publish modals`, async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  const database = emptyDatabase()
+  const writes = await mockAdmin(page, { database })
+  await login(page)
+    await page.getByRole('combobox', { name: 'Document format', exact: true }).selectOption('Modals')
+    await page.getByRole('combobox', { name: 'Page', exact: true }).selectOption(target)
+    await page.getByText('Create category', { exact: true }).first().click()
+    const form = page.getByRole('form', { name: 'Create category', exact: true })
+    const category = `new-${target}`
+    await form.getByRole('textbox', { name: 'Category name', exact: true }).fill(`New ${target} work`)
+    await form.getByRole('textbox', { name: 'Category slug', exact: true }).fill(category)
+    await form.getByRole('button', { name: 'Create category', exact: true }).click()
+    await expect(page.getByRole('combobox', { name: 'Category', exact: true })).toHaveValue(category)
+    await page.getByLabel('Document title', { exact: true }).fill(`Saved ${target} modal`)
+    await page.getByRole('textbox', { name: 'Slug', exact: true }).fill(category)
+    await page.getByRole('textbox', { name: 'Thumbnail URL', exact: true }).fill('/assets/images/DMT.png')
+    await page.getByLabel('Paragraph body.1', { exact: true }).fill('Saved directly from Admin')
+    await page.getByRole('combobox', { name: 'Insert block', exact: true }).last().selectOption('code')
+    await page.getByRole('textbox', { name: 'Source code', exact: true }).fill('const saved = true;')
+    await page.getByRole('textbox', { name: /^Code language/ }).fill('javascript')
+    await page.getByRole('combobox', { name: 'Insert block', exact: true }).last().selectOption('buttons')
+    await page.getByRole('textbox', { name: 'Button text', exact: true }).fill('Project website')
+    await page.getByRole('textbox', { name: 'Link URL', exact: true }).fill('https://example.com')
+    await page.getByRole('button', { name: 'Save modal', exact: true }).click()
+    await expect(page.locator('.admin-export').getByRole('status')).toContainText('Modal saved as a draft.')
+    expect(database.Modals.find(row => row.slug === category)?.published).toBe(false)
+    await page.goto(`/${target}`)
+    await page.getByRole('button', { name: `New ${target} work`, exact: true }).click()
+    await expect(page.getByRole('button', { name: new RegExp(`Saved ${target} modal`) })).toHaveCount(0)
+    await page.goto('/admin')
+    await page.getByRole('combobox', { name: 'Document format', exact: true }).selectOption('Modals')
+    const picker = page.getByRole('combobox', { name: 'Open saved document', exact: true })
+    await expect(picker.locator(`option[value="${category}"]`)).toHaveCount(1)
+    await picker.selectOption(category)
+    await expect(page.getByRole('textbox', { name: 'Source code', exact: true })).toHaveValue('const saved = true;')
+    await page.getByRole('checkbox', { name: 'Published', exact: true }).check()
+    await page.getByRole('button', { name: 'Save modal', exact: true }).click()
+    await expect(page.locator('.admin-export').getByRole('status')).toContainText('Modal saved and published.')
+    expect(database.Modals.filter(row => row.slug === category)).toHaveLength(1)
+    await page.goto(`/${target}`)
+    await page.getByRole('button', { name: `New ${target} work`, exact: true }).click()
+    await page.getByRole('button', { name: new RegExp(`Saved ${target} modal`) }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.locator('code span').first()).toBeAttached()
+    await expect(dialog.getByRole('link', { name: 'Project website', exact: true })).toHaveAttribute('href', 'https://example.com')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.keyboard.press('Escape')
+  expect(writes).toEqual(['POST', 'PATCH'])
+})
+
+test('admins save articles, protect existing slugs, and retain edits after a failed save', async ({ page }) => {
+  const database = emptyDatabase()
+  const existing = newDocument()
+  existing.title = 'Existing article'; existing.slug = 'existing-article'; existing.content.thumbnail = '/assets/images/DMT.png'
+  database.Articles.push(existing)
+  await mockAdmin(page, { database })
+  await login(page)
+  await page.getByLabel('Document title', { exact: true }).fill('New article')
+  await page.getByRole('textbox', { name: 'Slug', exact: true }).fill('existing-article')
+  await page.getByRole('textbox', { name: 'Thumbnail URL', exact: true }).fill('/assets/images/DMT.png')
+  await page.getByLabel('Paragraph body.1', { exact: true }).fill('Keep my work')
+  await page.getByRole('button', { name: 'Save article', exact: true }).click()
+  await expect(page.locator('.admin-export').getByRole('status')).toContainText('That slug already exists')
+  expect(database.Articles[0].title).toBe('Existing article')
+  await page.getByRole('textbox', { name: 'Slug', exact: true }).fill('new-article')
+  await page.route('**/rest/v1/Articles*', route => route.request().method() === 'POST'
+    ? route.fulfill({ status: 503, json: { code: 'unavailable', message: 'Unavailable' }, headers: { 'access-control-allow-origin': '*' } })
+    : route.fallback())
+  await page.getByRole('button', { name: 'Save article', exact: true }).click()
+  await expect(page.locator('.admin-export').getByRole('status')).toContainText('Your changes are still in the editor')
+  await expect(page.getByLabel('Paragraph body.1', { exact: true })).toHaveValue('Keep my work')
+  await page.unroute('**/rest/v1/Articles*')
+  await page.getByRole('checkbox', { name: 'Published', exact: true }).check()
+  await page.getByRole('button', { name: 'Save article', exact: true }).click()
+  await expect(page.locator('.admin-export').getByRole('status')).toContainText('Article saved and published.')
+  await expect(page.getByRole('button', { name: 'Save article', exact: true })).toBeDisabled()
+  await page.goto('/articles?slug=new-article')
+  await expect(page.locator('article')).toContainText('Keep my work')
 })

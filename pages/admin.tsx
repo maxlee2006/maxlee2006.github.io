@@ -7,7 +7,7 @@ import { createAdminClient, readAdmin, signOutAdmin, usernameIdentifier } from '
 // The static page initially contains the login shell only. Load the interactive
 // editor after Auth verification and the database allowlist check both succeed.
 // Static GitHub Pages cannot keep JavaScript source private; the real database
-// boundary is RLS. There are deliberately no article/modal write APIs here.
+// boundary is RLS, which limits draft reads and content saves to active admins.
 const DocumentEditor = dynamic(() => import('../components/admin/DocumentEditor'), { ssr: false, loading: () => <p role="status">Opening editor…</p> })
 
 export default function Admin() {

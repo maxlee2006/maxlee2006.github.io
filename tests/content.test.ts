@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { isSafeEmbed, isSafeUrl, recordSchema, articleHref } from '../lib/cms/content'
+import { isSafeEmbed, isSafeUrl, recordSchema, recordSchemaFor, articleHref, categorySchema } from '../lib/cms/content'
+import { originalCategories } from '../lib/cms/categories'
 
 const seed = JSON.parse(readFileSync(new URL('../supabase/seed.json', import.meta.url), 'utf8'))
 test('the complete original content import validates', () => {
@@ -30,8 +31,16 @@ test('invalid content is rejected rather than silently lost', () => {
   for (const block of [{ type: 'raw-html', html: '<script />' }, { type: 'image', src: 'javascript:alert(1)', alt: '' }, { type: 'embed', src: 'https://evil.example', title: '' }]) {
     assert.equal(recordSchema.safeParse({ ...seed.Articles[0], content: { ...seed.Articles[0].content, body: [block] } }).success, false)
   }
-  assert.equal(recordSchema.safeParse({ ...seed.Articles[0], category: 'typo' }).success, false)
+  assert.equal(recordSchemaFor(originalCategories).safeParse({ ...seed.Articles[0], category: 'typo' }).success, false)
   assert.equal(recordSchema.safeParse({ ...seed.Articles[0], published: false }).success, false)
+})
+
+test('database categories extend placements while rejecting missing or wrong-page categories', () => {
+  const extra = categorySchema.parse({ page: 'portfolio', slug: 'new-category', title: 'New category' })
+  const schema = recordSchemaFor([...originalCategories, extra])
+  assert.equal(schema.safeParse({ ...seed.Articles[0], page: 'portfolio', category: extra.slug }).success, true)
+  assert.equal(schema.safeParse({ ...seed.Articles[0], page: 'design', category: extra.slug }).success, false)
+  assert.equal(categorySchema.safeParse({ ...extra, image: 'javascript:alert(1)' }).success, false)
 })
 test('article links preserve the existing URL and encode new slugs', () => {
   assert.equal(articleHref('long-march'), '/LongMarch')

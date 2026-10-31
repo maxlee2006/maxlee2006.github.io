@@ -1,17 +1,10 @@
-import { buttonSchema, isSafeEmbed, isSafeUrl, recordSchema, type CmsRecord, type ContentBlock } from './content'
+import { buttonSchema, isSafeEmbed, isSafeUrl, recordSchema, recordSchemaFor, type Category, type CmsRecord, type ContentBlock } from './content'
 
-// These names match the actual Supabase tables. The editor never calls them;
-// it uses this choice to label the preview and manual-paste instructions.
+// Names of the tables used for preview, import/export, and authenticated saves.
 export type EditorKind = 'Articles' | 'Modals'
 // Public records are always published=true. A local document can be a draft,
 // so only that one field needs a different type in the editor.
 export type EditorRecord = Omit<CmsRecord, 'published'> & { published: boolean }
-
-export const placements = {
-  portfolio: ['modeling', 'animation', 'sketches'],
-  design: ['ue'],
-  'professional-projects': ['custom-engines', 'web-development'],
-} as const
 
 export function newDocument(): EditorRecord {
   // Empty required values make validation explain what still needs filling in.
@@ -66,8 +59,8 @@ export function previewBlocks(body: ContentBlock[]): ContentBlock[] {
 
 // The public schema deliberately accepts published rows only. Validate a draft
 // against all the same content rules, then restore its chosen published flag.
-export function validateDocument(record: EditorRecord) {
-  return recordSchema.safeParse({ ...record, published: true })
+export function validateDocument(record: EditorRecord, categories?: Category[]) {
+  return (categories ? recordSchemaFor(categories) : recordSchema).safeParse({ ...record, published: true })
 }
 
 export function exportDocument(record: EditorRecord): { row: EditorRecord; content: CmsRecord['content'] } {

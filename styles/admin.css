@@ -29,6 +29,8 @@
 .admin-document-bar label, .admin-preview-tools label { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #d1d5db; }
 .admin-shell select { background: #000; border: 1px solid #6b7280; color: #f3f4f6; border-radius: 0; padding: 7px 10px; max-width: 100%; }
 .admin-local-status { font-size: 12px; color: #9ca3af; }
+.admin-saved-documents { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 12px 0 24px; }
+.admin-saved-documents .admin-field { flex: 1; min-width: min(100%, 220px); }
 .admin-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid #4b5563; overflow: clip; align-items: start; }
 .admin-compose { min-width: 0; border-right: 1px solid #4b5563; }
 .admin-panel-title { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 12px; padding: 10px 22px; border-bottom: 1px solid #4b5563; }

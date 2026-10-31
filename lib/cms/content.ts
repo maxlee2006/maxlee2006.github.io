@@ -36,6 +36,16 @@ export function isSafeEmbed(value: string): boolean {
 const url = z.string().refine(isSafeUrl, 'Use a root-relative path or an HTTPS URL without whitespace or credentials')
 const embedUrl = z.string().refine(isSafeEmbed, 'Unsupported embed URL')
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+export const pages = ['portfolio', 'design', 'professional-projects'] as const
+export const categorySchema = z.object({
+  page: z.enum(pages), slug, title: z.string().trim().min(1).max(120),
+  image: url.nullable().transform(value => value ?? undefined).optional(),
+  logo: url.nullable().transform(value => value ?? undefined).optional(),
+  image_position: z.enum(['center', 'top']).default('center'),
+  columns: z.union([z.literal(2), z.literal(3)]).default(2),
+  sort_order: z.number().int().default(0),
+})
+export type Category = z.infer<typeof categorySchema>
 // Choose exactly one destination. Article slugs use the site's existing routes;
 // href and image use the same safe URL rules as other content blocks.
 export const buttonSchema = z.union([
@@ -96,29 +106,28 @@ const contentSchema = z.object({
 
 // These are the seven CMS columns read by the site. published must be true
 // because this schema describes PUBLIC content, not partially completed drafts.
-// superRefine below checks a relationship between fields: a valid category must
-// belong to the selected page, rather than just being any string.
+// Page/category membership comes from the categories table and its foreign key.
+// The standalone schema checks syntax; readers/editors also check membership.
 export const recordSchema = z.object({
   slug,
   title: z.string().min(1),
-  page: z.enum(['portfolio', 'design', 'professional-projects']),
-  category: z.string(),
+  page: z.enum(pages),
+  category: slug,
   sort_order: z.number().int(),
   published: z.literal(true),
   content: contentSchema,
-}).superRefine((record, ctx) => {
-  const categories: Record<string, string[]> = {
-    portfolio: ['modeling', 'animation', 'sketches'],
-    design: ['ue'],
-    'professional-projects': ['custom-engines', 'web-development'],
-  }
-  if (!categories[record.page].includes(record.category)) {
-    ctx.addIssue({ code: 'custom', path: ['category'], message: 'Category must belong to the selected page' })
-  }
 })
 
+export function recordSchemaFor(categories: Category[]) {
+  return recordSchema.superRefine((record, ctx) => {
+    if (!categories.some(category => category.page === record.page && category.slug === record.category)) {
+      ctx.addIssue({ code: 'custom', path: ['category'], message: 'Category must belong to the selected page' })
+    }
+  })
+}
+
 export type CmsRecord = z.infer<typeof recordSchema>
-export type Catalog = { articles: CmsRecord[]; modals: CmsRecord[] }
+export type Catalog = { articles: CmsRecord[]; modals: CmsRecord[]; categories: Category[] }
 // Preserve the old case-sensitive LongMarch address. Other articles share one
 // static page, which reads the slug after ? in the address. No new HTML file is
 // required per article; encodeURIComponent safely inserts the slug into a URL.

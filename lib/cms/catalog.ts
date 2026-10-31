@@ -1,5 +1,6 @@
 import { createClient } from '../../utils/supabase/client'
-import { recordSchema, type Catalog, type CmsRecord } from './content'
+import { recordSchema, recordSchemaFor, type Catalog, type CmsRecord } from './content'
+import { readCategories } from './categories'
 
 /** Read and validate every published row in one table.
  * A row is one article/modal; a column is a field such as title or content.
@@ -49,8 +50,12 @@ export function readCatalog(): Promise<Catalog> {
   // so a later page visit/retry can fetch again. This isn't a permanent cache or
   // a live subscription: an open page doesn't automatically receive owner edits.
   if (!pending) {
-    pending = Promise.all([readTable('Articles'), readTable('Modals')])
-      .then(([articles, modals]) => ({ articles, modals }))
+    pending = Promise.all([readTable('Articles'), readTable('Modals'), readCategories()])
+      .then(([articles, modals, categories]) => {
+        const schema = recordSchemaFor(categories)
+        for (const record of [...articles, ...modals]) schema.parse(record)
+        return { articles, modals, categories }
+      })
       .finally(() => { pending = undefined })
   }
   return pending

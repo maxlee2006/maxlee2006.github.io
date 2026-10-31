@@ -1,18 +1,20 @@
 # JSON CMS: setup, editing, and how it works
 
+**Current editing workflow:** use `/admin` to create categories and save draft or published Articles/Modals directly. See [Admin saving and publishing](ADMIN.md#save-publish-and-reopen). The setup walkthrough below also documents the original CMS rollout; the latest admin publishing migration extends its fixed categories and read-only browser permissions. Use `supabase/tests/admin-publishing-security.sql` for the current live security check.
+
 ## What this change does
 
 Previously, the website stored project descriptions and lists of images directly inside React page files. A modal always displayed its description first, then all its images, then its videos. LongMarch was a separate page containing hardcoded paragraphs and media.
 
 Now Supabase's **Articles** and **Modals** tables hold that content. Both use the same ordered JSON `body` format. The website renders blocks in array order: paragraph, image, another paragraph, another image, and so on. The existing 12 modals and LongMarch article are captured in `supabase/seed.json` for a one-time import. That file is a migration backup; the public website never imports it and never uses it as a fallback database.
 
-The website now includes a username-protected **Admin** document editor at `/admin`. See [Admin setup and usage](ADMIN.md) to activate username `super`, compose articles/modals, preview them, and copy valid JSON. The editor never saves content to the database. The Supabase dashboard's **Table Editor** remains the publishing interface. There is no website signup flow. Visitors get read-only access to published content.
+The username-protected **Admin** editor at `/admin` can save draft or published articles/modals and create categories. See [Admin setup and usage](ADMIN.md). Supabase's **Table Editor** remains an owner fallback. There is no website signup flow. Public visitors can read published content; active admins can also read drafts and save changes.
 
 Existing page layouts, categories, typography, media, and the `/LongMarch` address are retained. The home page's featured project and the LongMarch project card now also read their content from the database. Loading/error messages appear while data is loading or if it cannot be read. Content is fetched after the page opens, so there can be a short loading delay; search engines that do not execute JavaScript will only see the static shell. This is the tradeoff for live content updates on GitHub Pages.
 
 ## Start here: no database or networking experience needed
 
-A **CMS** (content management system) keeps content separate from page code. Here, you write content in Supabase's Table Editor, and the website turns it into cards, articles, and dialogs. You do not need to edit React code to publish another article in an existing category.
+A **CMS** (content management system) keeps content separate from page code. Here, you write content in Admin (or Supabase's Table Editor), and the website turns it into cards, articles, and dialogs. You do not need to edit React code to publish another article in an existing category.
 
 ### The pieces in everyday terms
 
@@ -23,7 +25,7 @@ A **CMS** (content management system) keeps content separate from page code. Her
 | Article / modal | An article opens a full page with its own link. A modal opens a dialog over a project grid. Both store their text and media in the same JSON format. |
 | Slug | A stable name used to find a row, such as `my-new-project`. It is different from the display title and the internal numeric `id`. |
 | JSON | Structured text using named fields in `{}` and ordered lists in `[]`. The `content` column stores a JSON object; its `body` is a list of blocks. |
-| Browser / client | The visitor's browser, which runs the website's JavaScript. There is no owner login in this website. |
+| Browser / client | The visitor's browser runs the website's JavaScript. Admin has a separate authenticated session for authorized editing. |
 | Server / host | A computer/service answering requests. GitHub Pages sends website files; Supabase sends published content. They are separate services. |
 | API / REST / HTTP request | The API is Supabase's web interface for data. The browser sends an HTTPS request asking for rows, and receives a JSON response. REST describes the style of this interface. HTTP GET reads data. |
 | URL / path / query parameter | A URL is an address. In `/articles?slug=my-new-project`, `/articles` chooses the page and `slug=my-new-project` tells that page which row to display. |
@@ -71,10 +73,11 @@ Keep existing slugs stable to preserve links. LongMarch is a special compatibili
 | Change | What to do |
 | --- | --- |
 | Edit text, title, order, placement within an existing category, or image URLs | Save the row in Supabase; reload the website. |
-| Add a valid article/modal in an existing category | Save the row and set `published = true` when ready; reload. |
+| Add a valid article/modal | Save it from Admin; check Published when ready, then reload. |
 | Add an image file under repository `public/assets` | Commit and deploy the file; use its `/assets/...` path in content. |
 | Use an uploaded image at a public HTTPS Storage URL | Save that URL in content; no website deployment for the URL change. Storage access must be configured separately. |
-| Change layouts, add categories, or support another embed provider | Change code, validate, then deploy. A new category string alone does not create a page section. |
+| Add a category | Use Create category in Admin; the new section appears on its selected page after reload. |
+| Change layouts or support another embed provider | Change code, validate, then deploy. |
 | Change either public Supabase configuration setting | Update local settings or GitHub Actions Variables as appropriate; rebuild/redeploy the public site so browser JavaScript gets the new values. |
 
 ### Public access versus owner access
@@ -169,7 +172,7 @@ Articles and Modals use the same columns. Each table has its own unique slugs, s
 
 An `id` column may already exist; it is left in place and the website does not depend on its type. It is not exposed by the CMS's public column grants. There is no automatic timestamp tracking in this change.
 
-Use these combinations for placement; they preserve the existing website sections:
+These six categories are seeded defaults. Admin can create more categories within the three pages; page/category membership is checked against the categories table and enforced by a foreign key:
 
 | `page` | Allowed `category` values |
 | --- | --- |
@@ -314,56 +317,27 @@ These blocks use the existing `content` JSON column: no SQL migration or seed im
 
 ## Where images live
 
-The database stores image **addresses**, not image files. Existing `/assets/...` paths continue to refer to images under `public/assets` in this repository. New files added there require a Git commit and deployment. To upload images without changing Git, create a public Supabase Storage bucket through the dashboard and use the HTTPS public object URL in `src` or `thumbnail`.
+The database stores image **addresses**, not image files. Category background images follow the same rules. Existing `/assets/...` paths continue to refer to images under `public/assets` in this repository. New files added there require a Git commit and deployment. To upload images without changing Git, create a public Supabase Storage bucket through the dashboard and use the HTTPS public object URL in `src` or `thumbnail`.
 
 Storage is separate from the Articles/Modals tables. This change does not create a bucket or change Storage policies. Upload through your owner dashboard, keep public upload/update/delete disabled, and only make assets public if you intend everyone to see them. Private buckets require a different access design; expiring signed URLs are unsuitable for permanent article content. External providers may block embedding or fail independently of the website.
 
 ## Why visitors cannot edit
 
-A URL and publishable key identify the Supabase project; they are intended to appear in browser JavaScript. They do **not** provide database administrator privileges. Never ship a Supabase secret/service-role key, database password, personal access token, or MCP login token to the browser, GitHub repository, or `NEXT_PUBLIC_` variables.
+The publishable key identifies the Supabase project but grants no administrator powers. Public pages use an anonymous client that reads published projects and category metadata. Admin uses a separate authenticated client, and database RLS checks its current active `admin_users` entry for every content write or draft read.
 
-Website content code only makes `SELECT` requests. Admin also makes Auth sign-in/session requests and a read-only lookup of its own `admin_users` entry, but never writes Articles or Modals. Removing write buttons would be insufficient on its own, because someone can send requests without your UI. The migration therefore enforces permissions inside PostgreSQL:
+Anonymous and non-admin signed-in visitors cannot insert/update projects or categories and cannot read drafts. Active admins can insert/update only the seven CMS columns, and can create categories. Browser roles cannot delete/truncate content, modify IDs or private columns, or manage the allowlist. Restrictive policies keep these boundaries effective even if an older permissive policy exists. No security-definer helper or service-role key is used.
 
-- **Grants** restrict `anon` and `authenticated` roles to reading only the seven CMS columns. Existing table and column grants are revoked first. Insert, update, delete, truncate, and other table privileges are not granted.
-- **Row-level security (RLS)** limits those reads to rows where `published` is true. This applies even to someone who removes the website's own published filter.
-- **Restrictive policies** additionally block insert/update/delete and restrict reads to published rows, so older permissive RLS policies do not widen access. RLS is enabled and forced on both tables.
-- Dashboard/database-owner administration remains the publishing path. Admin users have Auth sessions but retain the same read-only CMS permissions as anonymous visitors. The new allowlist table adds no CMS write privileges.
+New and changed projects must reference a category belonging to their selected page. Categories and page sections are loaded from the database. The six original category headers are seeded without replacing matching metadata.
 
-The migration's privileges cover these two tables. Review any existing `SECURITY DEFINER` database functions, views, triggers, privileged API endpoints, or other applications that can access them. Those can use elevated privileges and require their own audit. Do not grant public access to a function that writes CMS content. Do not weaken these policies to fix an empty-content issue; check `published`, JSON validity, and the public key instead.
+The disposable PGlite tests exercise real insert/update attempts for active, revoked, and non-admin identities, draft visibility, private-column protection, duplicate slugs, foreign keys, and repeat migrations. The current owner-run live check is `supabase/tests/admin-publishing-security.sql`. It uses negative-ID temporary document fixtures and a temporary category in one transaction, then rolls everything back. Existing content is only read. The older `cms-security.sql` is retained to verify the original read-only migration in baseline tests.
 
-The unit/database tests use an isolated local PostgreSQL engine (PGlite), not your production database. They test both public roles, hidden drafts, legacy permissive policies, old column grants, forbidden writes/truncate, repeat imports, rollback on incompatible schema, and preservation of legacy fields/IDs and owner-edited matching records. Passing them proves the supplied migration's behavior in that test database. Live verification is separate and was also performed as described below.
-
-`supabase/tests/cms-security.sql` is the repeatable owner-run live security check. It checks effective table and column privileges, RLS activation, and unfiltered published/draft visibility for both public roles. It inserts two draft fixtures using explicit negative IDs (without advancing identity sequences), then rolls the whole transaction back. It plans insert/update/delete with `EXPLAIN` **without** `ANALYZE`, so those statements never execute. Truncate is checked through effective privileges; no truncate statement runs. It never updates or deletes a production content row. Run the entire file together, including its final `ROLLBACK`, and choose unused fixture IDs/slugs if a future owner record uses those identifiers.
-
-After applying the migration, verify the **live** permissions from SQL Editor:
-
-```sql
-select c.relname, c.relrowsecurity, c.relforcerowsecurity
-from pg_class c join pg_namespace n on n.oid = c.relnamespace
-where n.nspname = 'public' and c.relname in ('Articles', 'Modals');
-
-select tablename, policyname, permissive, roles, cmd, qual, with_check
-from pg_policies
-where schemaname = 'public' and tablename in ('Articles', 'Modals');
-
-select grantee, table_name, privilege_type
-from information_schema.role_table_grants
-where table_schema = 'public' and table_name in ('Articles', 'Modals')
-  and grantee in ('PUBLIC', 'anon', 'authenticated');
-
-select grantee, table_name, column_name, privilege_type
-from information_schema.role_column_grants
-where table_schema = 'public' and table_name in ('Articles', 'Modals')
-  and grantee in ('PUBLIC', 'anon', 'authenticated');
-```
-
-Both RLS flags should be true. Both roles should have SELECT on the CMS columns and no write grants. Use the rollback-only draft fixtures above to check draft visibility without leaving test content in production. Never use a production content row as a write-permission probe. The supplied unit/database suite attempts actual writes only against a disposable database.
+Never ship a Supabase secret/service-role key, database password, personal access token, or MCP token in browser source or `NEXT_PUBLIC_` settings. The owner manages accounts and the allowlist separately. See [Admin database permissions](ADMIN.md#login-and-database-permissions) for the current access model.
 
 ## Why the SSR/session example is different here
 
 This repository uses Next.js's **Pages Router** and `output: 'export'` to publish plain files on GitHub Pages. The supplied `page.tsx`, server cookies, and middleware example targets a server-rendered App Router application. GitHub Pages does not run Next.js middleware or server components.
 
-Both requested packages (`@supabase/supabase-js` and `@supabase/ssr`) are installed. The public catalog uses a JavaScript client with session persistence, URL session detection, and automatic token refresh disabled. Admin uses a separate browser client with a tab-scoped session, token refresh, server-verified identity, and an RLS-protected allowlist. Adding cookie middleware would not execute on GitHub Pages. Public database access remains secured by grants/RLS. The Admin interface creates JSON locally; a future privileged server-side publishing API or server-rendered articles would require a server-capable host and its own authorization checks. See [Admin architecture](ADMIN.md#how-login-works-and-what-protects-the-database).
+Both requested packages (`@supabase/supabase-js` and `@supabase/ssr`) are installed. The public catalog uses a JavaScript client with session persistence, URL session detection, and automatic token refresh disabled. Admin uses a separate browser client with a tab-scoped session, token refresh, server-verified identity, and an RLS-protected allowlist. Adding cookie middleware would not execute on GitHub Pages. Public database access remains secured by grants/RLS. Admin saves content directly through the signed-in Supabase client; RLS authorizes those requests, so a publishing server is unnecessary. Server-rendered articles would require a server-capable host. See [Admin architecture](ADMIN.md#login-and-database-permissions).
 
 ## Files and responsibilities
 
