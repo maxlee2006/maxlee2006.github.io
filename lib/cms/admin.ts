@@ -8,7 +8,8 @@ const columns = 'slug,title,page,category,sort_order,published,content'
 function saveError(error: { code?: string; message: string }): Error {
   if (error.code === '23505') return new Error('That slug already exists here. Open the saved item to edit it, or choose another slug.')
   if (error.code === '23503') return new Error('Choose a category that belongs to this page, then try again.')
-  if (error.code === '42501' || error.code === 'PGRST301') return new Error('Saving requires an active admin account. Sign in again and try again.')
+  if (error.code === '42501') return new Error('The database denied permission to save. Your changes are still in the editor. Contact the site owner to check save permissions.')
+  if (error.code === 'PGRST301' || error.code === 'PGRST303') return new Error('Your sign-in session is no longer valid. Copy your changes, then sign in again and try saving.')
   return new Error('Could not save. Your changes are still in the editor. Please try again.')
 }
 

@@ -43,8 +43,16 @@ begin
     if admin_id is not null then
       perform set_config('request.jwt.claim.sub',admin_id::text,true);
       execute 'set local role authenticated';
-      execute format('with changed as (update public.%I set title=''Admin fixture update'' where slug=''admin-security-probe'' returning slug) select count(*) from changed',target) into changed_count;
+      -- PostgREST includes id in its mutation CTE's RETURNING, even when the
+      -- final response requests only CMS fields. Exercise that read privilege.
+      execute format('with changed as (update public.%I set title=''Admin fixture update'' where slug=''admin-security-probe'' returning id,slug) select count(*) from changed',target) into changed_count;
       if changed_count <> 1 then raise exception 'Active admin cannot update draft in %',target; end if;
+      -- Plan the REST INSERT shape without executing it or advancing sequences.
+      execute format($probe$explain with pgrst_source as (
+        insert into public.%I (slug,title,page,category,published,content)
+        values ('admin-returning-id-probe','REST save probe','portfolio','modeling',false,'{"thumbnail":"/probe.png","body":[]}')
+        returning id,slug,title,page,category,sort_order,published,content
+      ) select slug,title,page,category,sort_order,published,content from pgrst_source$probe$,target);
       execute 'reset role';
     end if;
   end loop;

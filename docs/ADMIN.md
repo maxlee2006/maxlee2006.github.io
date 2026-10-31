@@ -128,3 +128,13 @@ Tests use a disposable PostgreSQL engine and mocked browser HTTP responses. They
 Current implementation checks passed: **22 unit/database tests**, **16 browser tests against the production static export**, lint, and the production build. The migration is applied to the live Supabase project; it was recorded as `20261031015448_admin_content_and_categories` (the connected tool assigns its own timestamp). Reconcile that timestamp with the CLI-created local migration before adopting a CLI migration-push workflow. The live rollback-only security check passed for visitor draft isolation and active-admin draft updates/category creation. Verification found six categories, two articles, twelve modals, one linked active admin, and zero remaining test fixtures. The public REST check validated all six categories and all fourteen published documents. Website deployment remains separate.
 
 The Supabase security advisor reported no new table/RLS findings. Its existing Auth warning remains: [leaked-password protection is disabled](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). This task did not change password settings or accounts.
+
+### Save permission fix
+
+If an active admin could create categories but received “Saving requires an active admin account” for an article/modal, the original error was a missing read permission on the internal primary key. PostgREST adds `id` to the insert CTE's `RETURNING` clause, even when the response selects only the seven CMS fields. The original direct-SQL tests did not request that internal ID.
+
+`supabase/migrations/20261031024708_admin_save_returning_id.sql` grants only `SELECT (id)` to `authenticated` on Articles and Modals. It grants no anonymous ID access, no ID writes, no table-wide reads, and no deletion rights. Existing RLS still restricts draft reads and all writes to active admins. Supabase recorded the applied fix as `20261031024827_admin_save_returning_id`.
+
+The regression now reproduces the failure before the grant and executes the REST-style CTE successfully afterward for both tables. It also verifies visitor/non-admin/revoked access remains blocked and private columns remain inaccessible. The live rollback-only security check now tests primary-key reads and plans the insert CTE without advancing identity sequences; it passed with no test fixtures remaining.
+
+The editor now distinguishes database permission errors from invalid/expired sessions, keeping unsaved content in place in both cases. The live database fix takes effect without reloading the editor or signing in again.
