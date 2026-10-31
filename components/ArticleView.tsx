@@ -7,17 +7,21 @@ import type { CmsRecord } from '../lib/cms/content'
 // Reuse the original LongMarch layout for every article. Hero/logo metadata is
 // optional; ContentBody handles ordered text/media. Head updates browser metadata
 // after loading, so this isn't server-rendered article text for search crawlers.
-export default function ArticleView({ article }: { article: CmsRecord }) {
+// The Admin preview reuses this component, hiding only page-level navigation
+// and metadata. The actual title, hero, text, and body stay in one renderer.
+export default function ArticleView({ article, preview = false }: { article: CmsRecord; preview?: boolean }) {
   const { content } = article
+  // A preview lives inside Admin's main landmark, so avoid nesting <main> tags.
+  const Container = preview ? 'div' : 'main'
   return <>
-    <Head>
+    {!preview && <Head>
       <title>{article.title}</title>
       <meta name="description" content={content.description} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="icon" href="/favicon.ico" />
-    </Head>
-    <main className="max-w-5xl mx-auto px-5 pt-20 md:pt-5 pb-16">
-        <Link href="/"
+    </Head>}
+    <Container className={preview ? 'max-w-5xl mx-auto px-5 py-6' : 'max-w-5xl mx-auto px-5 pt-20 md:pt-5 pb-16'}>
+        {!preview && <Link href="/"
         className="fixed left-0 md:-left-[-2rem] top-4 focus:bg-white focus:mx-10 md:top-0 h-24 md:h-full w-24 md:w-30 bg-gray-200 z-50 flex items-center justify-center transition-all duration-200 ease-linear md:hover:bg-white md:hover:mx-5 "
         >
           <div className="flex md:-rotate-90">
@@ -25,9 +29,9 @@ export default function ArticleView({ article }: { article: CmsRecord }) {
           BACK
           </h1>
           </div>
-        </Link>
+        </Link>}
 
-        <div
+        {!preview && <div
             className="fixed inset-0 -z-10 opacity-30"
             style={{
             backgroundImage: `
@@ -37,7 +41,7 @@ export default function ArticleView({ article }: { article: CmsRecord }) {
             backgroundSize: '100% 100%',
             pointerEvents: 'none'
             }}
-        ></div>
+        ></div>}
 
 
       {content.hero_image ? <div
@@ -54,6 +58,6 @@ export default function ArticleView({ article }: { article: CmsRecord }) {
       <article aria-label={article.title}>
         <ContentBody body={content.body} variant="article" />
       </article>
-    </main>
+    </Container>
   </>
 }

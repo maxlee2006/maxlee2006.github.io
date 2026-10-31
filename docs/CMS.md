@@ -6,7 +6,7 @@ Previously, the website stored project descriptions and lists of images directly
 
 Now Supabase's **Articles** and **Modals** tables hold that content. Both use the same ordered JSON `body` format. The website renders blocks in array order: paragraph, image, another paragraph, another image, and so on. The existing 12 modals and LongMarch article are captured in `supabase/seed.json` for a one-time import. That file is a migration backup; the public website never imports it and never uses it as a fallback database.
 
-The Supabase dashboard's **Table Editor** is your editing interface. There is no public editor, signup flow, or admin login page on the website. You edit using your Supabase account. Visitors get read-only access to published content.
+The website now includes a username-protected **Admin** document editor at `/admin`. See [Admin setup and usage](ADMIN.md) to activate username `super`, compose articles/modals, preview them, and copy valid JSON. The editor never saves content to the database. The Supabase dashboard's **Table Editor** remains the publishing interface. There is no website signup flow. Visitors get read-only access to published content.
 
 Existing page layouts, categories, typography, media, and the `/LongMarch` address are retained. The home page's featured project and the LongMarch project card now also read their content from the database. Loading/error messages appear while data is loading or if it cannot be read. Content is fetched after the page opens, so there can be a short loading delay; search engines that do not execute JavaScript will only see the static shell. This is the tradeoff for live content updates on GitHub Pages.
 
@@ -204,7 +204,7 @@ In Table Editor, open **Modals**, then insert a row or edit an existing one. Set
 
 The thumbnail appears in the grid. Body images appear only at the position where you put them. `date` and `method` appear above the body in the modal and on its card. `caption` is optional. Write meaningful `alt` text for accessibility.
 
-Set `published = true` when ready, save the row, then reload the website. You do not need to rebuild or redeploy for row edits. An already open page keeps its current content until navigation or reload. There is no draft preview endpoint: unpublished content deliberately cannot be accessed by the public website. Use the local tests to preview a new layout, or publish and verify when ready.
+Set `published = true` when ready, save the row, then reload the website. You do not need to rebuild or redeploy for row edits. An already open page keeps its current content until navigation or reload. Unpublished database rows remain inaccessible to website clients. To preview a draft, compose or import its JSON locally in [Admin](ADMIN.md); its preview does not query private drafts or publish them.
 
 ## Add or edit an article
 
@@ -318,12 +318,12 @@ Storage is separate from the Articles/Modals tables. This change does not create
 
 A URL and publishable key identify the Supabase project; they are intended to appear in browser JavaScript. They do **not** provide database administrator privileges. Never ship a Supabase secret/service-role key, database password, personal access token, or MCP login token to the browser, GitHub repository, or `NEXT_PUBLIC_` variables.
 
-Website code only makes `SELECT` requests. Removing write buttons would be insufficient on its own, because someone can send requests without your UI. The migration therefore enforces permissions inside PostgreSQL:
+Website content code only makes `SELECT` requests. Admin also makes Auth sign-in/session requests and a read-only lookup of its own `admin_users` entry, but never writes Articles or Modals. Removing write buttons would be insufficient on its own, because someone can send requests without your UI. The migration therefore enforces permissions inside PostgreSQL:
 
 - **Grants** restrict `anon` and `authenticated` roles to reading only the seven CMS columns. Existing table and column grants are revoked first. Insert, update, delete, truncate, and other table privileges are not granted.
 - **Row-level security (RLS)** limits those reads to rows where `published` is true. This applies even to someone who removes the website's own published filter.
 - **Restrictive policies** additionally block insert/update/delete and restrict reads to published rows, so older permissive RLS policies do not widen access. RLS is enabled and forced on both tables.
-- Dashboard/database-owner administration remains the editing path. This site has no end-user sessions, so signed-in public users are deliberately given the same read-only permissions as anonymous visitors.
+- Dashboard/database-owner administration remains the publishing path. Admin users have Auth sessions but retain the same read-only CMS permissions as anonymous visitors. The new allowlist table adds no CMS write privileges.
 
 The migration's privileges cover these two tables. Review any existing `SECURITY DEFINER` database functions, views, triggers, privileged API endpoints, or other applications that can access them. Those can use elevated privileges and require their own audit. Do not grant public access to a function that writes CMS content. Do not weaken these policies to fix an empty-content issue; check `published`, JSON validity, and the public key instead.
 
@@ -359,7 +359,7 @@ Both RLS flags should be true. Both roles should have SELECT on the CMS columns 
 
 This repository uses Next.js's **Pages Router** and `output: 'export'` to publish plain files on GitHub Pages. The supplied `page.tsx`, server cookies, and middleware example targets a server-rendered App Router application. GitHub Pages does not run Next.js middleware or server components.
 
-Both requested packages (`@supabase/supabase-js` and `@supabase/ssr`) are installed. This implementation uses the JavaScript client with session persistence, URL session detection, and automatic token refresh disabled. There is no sign-in session to refresh. Adding cookie middleware would not secure this static site and would not execute on its host. Public access is secured by database privileges/RLS. If you later want a custom admin UI or server-side article rendering, choose a server-capable host and a separate authentication/authorization design.
+Both requested packages (`@supabase/supabase-js` and `@supabase/ssr`) are installed. The public catalog uses a JavaScript client with session persistence, URL session detection, and automatic token refresh disabled. Admin uses a separate browser client with a tab-scoped session, token refresh, server-verified identity, and an RLS-protected allowlist. Adding cookie middleware would not execute on GitHub Pages. Public database access remains secured by grants/RLS. The Admin interface creates JSON locally; a future privileged server-side publishing API or server-rendered articles would require a server-capable host and its own authorization checks. See [Admin architecture](ADMIN.md#how-login-works-and-what-protects-the-database).
 
 ## Files and responsibilities
 

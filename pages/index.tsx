@@ -205,6 +205,7 @@ export default function Home() {
             </div>
 
             <div className="relative z-10  w-full  bg-black p-20"> 
+              <Link href="/admin" className="text-sm text-gray-500 hover:text-gray-200">Admin</Link>
             </div>
 
 
