@@ -1,4 +1,6 @@
 import type { ContentBlock } from '../lib/cms/content'
+import CodeBlock from './CodeBlock'
+import ContentButtons from './ContentButtons'
 
 type Props = { body: ContentBlock[]; variant: 'article' | 'modal'; layout?: 'text' | 'embeds' | 'gallery' }
 /** Display already-validated blocks in their saved array order.
@@ -21,6 +23,10 @@ export default function ContentBody({ body, variant, layout }: Props) {
       }
       case 'link':
         return <div key={index} className="text-blue-500 font-funnel whitespace-pre-line transition-all hover:text-blue-100"><a href={block.href} target="_blank" rel="noopener noreferrer">{block.text}</a></div>
+      case 'code':
+        return <CodeBlock key={index} code={block.code} language={block.language} filename={block.filename} />
+      case 'buttons':
+        return <ContentButtons key={index} buttons={block.buttons} />
       // The validator restricts providers; sandbox further limits what an embedded
       // page can do. These permissions allow supported players to work; they do
       // not grant access to our database or make arbitrary embed hosts acceptable.

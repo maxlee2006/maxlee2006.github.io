@@ -35,6 +35,14 @@ export function isSafeEmbed(value: string): boolean {
 
 const url = z.string().refine(isSafeUrl, 'Use a root-relative path or an HTTPS URL without whitespace or credentials')
 const embedUrl = z.string().refine(isSafeEmbed, 'Unsupported embed URL')
+const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+// Choose exactly one destination. Article slugs use the site's existing routes;
+// href and image use the same safe URL rules as other content blocks.
+const buttonSchema = z.union([
+  z.object({ text: z.string().trim().min(1), article: slug, href: z.never().optional(), image: url.optional() }),
+  z.object({ text: z.string().trim().min(1), href: url, article: z.never().optional(), image: url.optional() }),
+])
+export type ContentButton = z.infer<typeof buttonSchema>
 // The type field selects which other fields are meaningful. An ordered body
 // can repeat a type: paragraph -> image -> paragraph is three separate entries.
 export type ContentBlock =
@@ -42,6 +50,8 @@ export type ContentBlock =
   | { type: 'heading'; text: string }
   | { type: 'image'; src: string; alt: string; caption?: string }
   | { type: 'link'; href: string; text: string }
+  | { type: 'code'; code: string; language?: string; filename?: string }
+  | { type: 'buttons'; buttons: ContentButton[] }
   | { type: 'embed'; src: string; title: string; height?: number }
   | { type: 'group'; layout: 'text' | 'embeds' | 'gallery'; body: ContentBlock[] }
 
@@ -54,6 +64,8 @@ function blockSchema(depth: number): z.ZodType<ContentBlock> {
     z.object({ type: z.literal('heading'), text: z.string() }),
     z.object({ type: z.literal('image'), src: url, alt: z.string(), caption: z.string().optional() }),
     z.object({ type: z.literal('link'), href: url, text: z.string() }),
+    z.object({ type: z.literal('code'), code: z.string().max(100000), language: z.string().trim().min(1).max(100).optional(), filename: z.string().optional() }),
+    z.object({ type: z.literal('buttons'), buttons: z.array(buttonSchema).min(1).max(100) }),
     z.object({ type: z.literal('embed'), src: embedUrl, title: z.string(), height: z.number().int().min(100).max(1000).optional() }),
   ] as const
   if (depth === 0) return z.discriminatedUnion('type', blocks)
@@ -87,7 +99,7 @@ const contentSchema = z.object({
 // superRefine below checks a relationship between fields: a valid category must
 // belong to the selected page, rather than just being any string.
 export const recordSchema = z.object({
-  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  slug,
   title: z.string().min(1),
   page: z.enum(['portfolio', 'design', 'professional-projects']),
   category: z.string(),

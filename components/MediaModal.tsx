@@ -26,7 +26,7 @@ export default function MediaModal({ item, onClose }: MediaModalProps) {
       // Wrap Tab/Shift+Tab between the first and last controls instead of letting
       // keyboard users tab into the page behind the dialog.
       if (event.key === 'Tab') {
-        const elements = dialog.current?.querySelectorAll<HTMLElement>('button, a[href], iframe')
+        const elements = dialog.current?.querySelectorAll<HTMLElement>('button, a[href], iframe, [tabindex="0"]')
         const first = elements?.[0]
         const last = elements?.[elements.length - 1]
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
@@ -46,8 +46,8 @@ export default function MediaModal({ item, onClose }: MediaModalProps) {
   if (!item) return null
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 transition-opacity duration-300 ease-linear ${isVisible ? 'opacity-100' : 'opacity-0'}`} onClick={onClose}>
-      <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="media-modal-title" className="relative max-w-7xl max-h-[90vh] overflow-y-auto bg-black/90 p-6" onClick={event => event.stopPropagation()}>
-        <div className="relative max-w-7xl max-h-full">
+      <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="media-modal-title" className="relative min-w-0 max-w-7xl max-h-[90vh] overflow-y-auto bg-black/90 p-6" onClick={event => event.stopPropagation()}>
+        <div className="relative min-w-0 max-w-7xl max-h-full">
           <button ref={closeButton} onClick={onClose} className="absolute -top-0 right-0 text-white text-4xl hover:text-gray-300 transition-colors" aria-label="Close">×</button>
           <h3 id="media-modal-title" className="text-2xl font-monoDisplay mb-2 pr-8">{item.title}</h3>
           {item.content.date && <h4 className="text-xl font-funnel mb-2">{item.content.date}</h4>}

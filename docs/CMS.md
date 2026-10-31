@@ -241,6 +241,8 @@ The body **must be an array** (`[...]`), not an object with repeating keys. Arra
 | `heading` | `text` | — |
 | `image` | `src`, `alt` | `caption` |
 | `link` | `href`, `text` | — |
+| `code` | `code` (source text) | `language`, `filename` |
+| `buttons` | `buttons` (array of link buttons) | — |
 | `embed` | `src`, `title` | `height` (100–1000 pixels; otherwise 16:9) |
 | `group` | `layout`, `body` | — |
 
@@ -249,6 +251,62 @@ A group is a nested array used to preserve LongMarch's current spacing and media
 Use double quotes in JSON, escape embedded quotes with `\"`, and use `\n` for line breaks. Do not use comments or trailing commas. Text is plain text, not Markdown or HTML. React escapes text: `<script>` is displayed as text rather than executed. HTML tags are never injected into the page.
 
 Images and links support root-relative paths such as `/assets/images/file.png` or absolute HTTPS URLs. Protocol-relative URLs, credentials in URLs, HTTP, JavaScript, and data URLs are rejected. Video embeds are restricted to YouTube `/embed/ID`, YouTube's no-cookie domain, Steam's `/widget/ID/`, and the existing `https://www.musicnerd.xyz/` embed. Frames are sandboxed. Other sites need an explicit allowlist/code update; use a normal link block otherwise. Invalid content produces a recoverable error rather than being silently omitted. The browser console identifies invalid rows/fields for debugging, and `npm run cms:check` checks records before deployment.
+
+### Code samples in articles and modals
+
+Add a `code` block anywhere in `content.body`, just as you would add a paragraph. It also works inside a group. `code` holds the source itself; `language` selects syntax highlighting and `filename` optionally labels the sample:
+
+```json
+{
+  "type": "code",
+  "language": "cpp",
+  "filename": "main.cpp",
+  "code": "#include <iostream>\n\nint main() {\n    std::cout << \"Hello, world!\";\n    return 0;\n}"
+}
+```
+
+Highlighting uses **Shiki**, VS Code's TextMate grammars, and the **Dark+** theme. Language IDs and aliases from [Shiki's bundled languages](https://shiki.style/languages) are supported, including `cpp` / `c++`, `csharp` / `c#`, `glsl`, `hlsl`, `javascript` / `js`, `typescript` / `ts`, `tsx`, `html`, `css`, `json`, `python`, and `sql`. IDs are case insensitive. Omit `language` (or use `text`) for plain text. Unknown IDs also show plain text. Source is immediately readable while the highlighter loads; a loading failure leaves the source readable.
+
+Use `\n` for line breaks, `\t` for tabs, `\"` for quotes, and `\\` for backslashes inside the JSON source string. Indentation is preserved, and long lines scroll horizontally within the code panel. Keyboard users can Tab to the panel and use arrow keys to scroll. Samples may contain up to 100,000 characters. HTML in a code sample is displayed as text and never executed.
+
+### Button grids between content blocks
+
+Add a `buttons` block to an article's `content.body` wherever its grid should appear. It uses an array so you can add several buttons, reorder them, and add more paragraphs or code afterward. The shared body renderer also supports it in modals and nested groups.
+
+```json
+{
+  "thumbnail": "/assets/images/Screenshot_01.png",
+  "body": [
+    { "type": "paragraph", "text": "Explore the project and related work." },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "text": "Play Long March",
+          "article": "long-march",
+          "image": "/assets/images/Screenshot_01.png"
+        },
+        {
+          "text": "Read another article",
+          "article": "another-project"
+        },
+        {
+          "text": "View source code",
+          "href": "https://github.com/your-account/your-project",
+          "image": "https://example.com/project-image.jpg"
+        }
+      ]
+    },
+    { "type": "paragraph", "text": "Continue the article here." }
+  ]
+}
+```
+
+Each button requires nonempty `text` and exactly one destination: `article` (a published article's slug) **or** `href` (an HTTPS URL or root-relative site path). An article slug automatically becomes `/LongMarch` for `long-march`, or `/articles?slug=...` for other articles. Create and publish the destination article separately; the validator checks slug syntax, not whether that article exists. Article links and root-relative links open in the current tab. HTTPS links open in a new tab.
+
+`image` is optional and accepts the same URL forms as other images. It fills the button behind a dark overlay, with the label in the site's **Major Mono Display header font**. Omit `image` entirely for a black button; do not supply an empty string. The grid has one column on phones, two on medium screens, and three on wide screens. Each grid allows 1–100 buttons; repeat the block to place separate grids in different parts of the body.
+
+These blocks use the existing `content` JSON column: no SQL migration or seed import is needed. Deploy the code support before saving published rows that use the new types; older site builds reject unfamiliar block types. After deployment, editing samples or buttons in Supabase only requires saving the row and reloading the website.
 
 ## Where images live
 

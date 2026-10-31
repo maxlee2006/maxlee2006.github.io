@@ -32,6 +32,48 @@ p {
   font-family: var(--font-funnel-display);
 }
 
+/* VS Code Dark+ colors come from Shiki tokens; source stays selectable text. */
+.code-block {
+  min-width: 0;
+  max-width: 100%;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border: 1px solid #454545;
+  border-radius: 0.375rem;
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid #454545;
+  background: #252526;
+  font-family: var(--font-funnel-display);
+  font-size: 0.875rem;
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 4;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.code-block pre:focus-visible {
+  outline: 2px solid #007fd4;
+  outline-offset: -2px;
+}
+
+.code-block code {
+  font-family: Consolas, 'SFMono-Regular', 'Liberation Mono', monospace;
+}
+
 @layer components {
   .btn {
     @apply inline-flex items-center px-3.5 py-2 bg-transparent text-github-blue rounded-md no-underline mt-2.5;
