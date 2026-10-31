@@ -4,6 +4,7 @@ import test from 'node:test'
 import { PGlite } from '@electric-sql/pglite'
 
 const migration = readFileSync('supabase/migrations/20261031014145_admin_content_and_categories.sql', 'utf8')
+const returningIdMigration = readFileSync('supabase/migrations/20261031024708_admin_save_returning_id.sql', 'utf8')
 const adminId = '00000000-0000-4000-8000-000000000001'
 const otherId = '00000000-0000-4000-8000-000000000002'
 const content = JSON.stringify({ thumbnail: '/thumb.png', body: [{ type: 'code', code: 'int main() { return 0; }', language: 'cpp' }, { type: 'buttons', buttons: [{ text: 'Source', href: 'https://example.com' }] }] })
@@ -27,7 +28,26 @@ test('active admins create categories and save drafts/published content; all oth
     await db.exec(migration)
     assert.deepEqual((await db.query('select slug,content from public."Articles" order by slug')).rows, before)
     assert.equal((await db.query<{ title: string }>("select title from public.categories where page='design' and slug='ue'")).rows[0].title, 'Owner title')
+    await db.exec('alter table public."Articles" add column private_notes text;')
     await db.exec(`set role authenticated; set request.jwt.claim.sub='${adminId}';`)
+    // Match the failing REST query: PostgREST includes the primary key in the
+    // mutation CTE's RETURNING, then exposes only the requested CMS fields.
+    // Plain INSERT tests miss this extra SELECT permission requirement.
+    const restInsert = (table: string, slug: string) => db.query<{ slug: string }>(`with pgrst_source as (
+      insert into public."${table}" (slug,title,page,category,published,content)
+      values ($1,'REST save','portfolio','modeling',false,$2::jsonb)
+      returning id,slug,title,page,category,sort_order,published,content
+    ) select slug,title,page,category,sort_order,published,content from pgrst_source`, [slug, content])
+    for (const table of ['Articles', 'Modals']) await assert.rejects(restInsert(table, 'rest-save-probe'), /permission denied/)
+    await db.exec('reset role;')
+    await db.exec(returningIdMigration)
+    await db.exec(returningIdMigration)
+    await db.exec(`set role authenticated; set request.jwt.claim.sub='${adminId}';`)
+    for (const table of ['Articles', 'Modals']) {
+      assert.equal((await restInsert(table, 'rest-save-probe')).rows[0].slug, 'rest-save-probe')
+      await assert.rejects(db.exec(`update public."${table}" set id=500 where slug='rest-save-probe'`), /permission denied/)
+    }
+    await assert.rejects(db.exec('select private_notes from public."Articles"'), /permission denied/)
     for (const page of ['portfolio', 'design', 'professional-projects']) {
       await db.query('insert into public.categories (page,slug,title) values ($1,$2,$3)', [page, 'new-work', 'New work'])
       for (const table of ['Articles', 'Modals']) {
@@ -51,6 +71,9 @@ test('active admins create categories and save drafts/published content; all oth
     for (const role of ['anon', 'authenticated']) {
       await db.exec(`set role ${role}; set request.jwt.claim.sub='${otherId}';`)
       assert.equal((await db.query('select slug from public."Articles" where not published')).rows.length, 0)
+      assert.equal((await db.query('select slug from public."Modals" where not published')).rows.length, 0)
+      if (role === 'anon') await assert.rejects(db.exec('select id from public."Articles"'), /permission denied/)
+      else assert.equal((await db.query('select id from public."Articles" where not published')).rows.length, 0)
       assert.equal((await db.query('select slug from public.categories')).rows.length, 9)
       await assert.rejects(db.query('insert into public."Articles" (slug,title,page,category,published,content) values (\'forbidden\',\'Forbidden\',\'portfolio\',\'modeling\',true,$1::jsonb)', [content]), /permission denied|row-level security/)
       await assert.rejects(db.exec("insert into public.categories (page,slug,title) values ('portfolio','forbidden','Forbidden')"), /permission denied|row-level security/)
