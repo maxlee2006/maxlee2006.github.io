@@ -330,6 +330,15 @@ test('admins save articles, protect existing slugs, and retain edits after a fai
   await expect(page.locator('.admin-export').getByRole('status')).toContainText('That slug already exists')
   expect(database.Articles[0].title).toBe('Existing article')
   await page.getByRole('textbox', { name: 'Slug', exact: true }).fill('new-article')
+  // A database privilege error must not masquerade as an expired login.
+  await page.route('**/rest/v1/Articles*', route => route.request().method() === 'POST'
+    ? route.fulfill({ status: 403, json: { code: '42501', message: 'permission denied for table Articles' }, headers: { 'access-control-allow-origin': '*' } })
+    : route.fallback())
+  await page.getByRole('button', { name: 'Save article', exact: true }).click()
+  await expect(page.locator('.admin-export').getByRole('status')).toContainText('The database denied permission to save.')
+  await expect(page.locator('.admin-export').getByRole('status')).not.toContainText('Sign in again')
+  await expect(page.getByLabel('Paragraph body.1', { exact: true })).toHaveValue('Keep my work')
+  await page.unroute('**/rest/v1/Articles*')
   await page.route('**/rest/v1/Articles*', route => route.request().method() === 'POST'
     ? route.fulfill({ status: 503, json: { code: 'unavailable', message: 'Unavailable' }, headers: { 'access-control-allow-origin': '*' } })
     : route.fallback())
