@@ -130,3 +130,107 @@ test('sign out clears this tab even when Supabase cannot revoke the session', as
   await expect(page.getByLabel('Username', { exact: true })).toBeVisible()
   await expect(page.getByRole('region', { name: 'Document editor', exact: true })).toHaveCount(0)
 })
+
+for (const width of [1280, 390]) test(`admin composes, previews, edits, and exports code and button grids at ${width}px`, async ({ page, context }) => {
+  await page.setViewportSize({ width, height: 900 })
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  const writes = await mockAdmin(page)
+  await login(page)
+  await page.getByLabel('Document title', { exact: true }).fill('Code project')
+  await page.getByRole('textbox', { name: 'Slug', exact: true }).fill('code-project')
+  await page.getByRole('textbox', { name: 'Thumbnail URL', exact: true }).fill('/assets/images/DMT.png')
+  await page.getByLabel('Paragraph body.1', { exact: true }).fill('Before the code')
+  await page.getByRole('combobox', { name: 'Insert block', exact: true }).last().selectOption('code')
+  const code = 'const message = "<script>alert(1)</script>";\n\tconsole.log(message);\n// ' + 'long line '.repeat(30)
+  await page.getByRole('textbox', { name: /^Code language/ }).fill('javascript')
+  await page.getByLabel('Code filename (optional)', { exact: true }).fill('demo.js')
+  await page.getByRole('textbox', { name: 'Source code', exact: true }).fill(code)
+  const preview = page.getByLabel('Live website preview', { exact: true })
+  await expect(preview.locator('code span').first()).toBeAttached()
+  expect(await preview.locator('code').textContent()).toBe(code)
+  expect(await preview.locator('code span').evaluateAll(tokens => new Set(tokens.map(token => getComputedStyle(token).color)).size)).toBeGreaterThan(1)
+  await expect(preview.locator('script')).toHaveCount(0)
+
+  await page.getByRole('combobox', { name: 'Insert block', exact: true }).last().selectOption('buttons')
+  const grid = page.getByRole('region', { name: 'Button grid block body.3', exact: true })
+  const first = grid.getByRole('group', { name: 'Button 1', exact: true })
+  await first.getByLabel('Button text', { exact: true }).fill('Long March')
+  await first.getByRole('combobox', { name: 'Destination type', exact: true }).selectOption('article')
+  await first.getByLabel('Article slug', { exact: true }).fill('long-march')
+  await first.getByRole('textbox', { name: /^Button image URL/ }).fill('/assets/images/DMT.png')
+  await grid.getByRole('button', { name: 'Add button', exact: true }).click()
+  const second = grid.getByRole('group', { name: 'Button 2', exact: true })
+  await second.getByLabel('Button text', { exact: true }).fill('Website')
+  await second.getByLabel('Link URL', { exact: true }).fill('https://example.com')
+  // Switching destination types must remove the old field from the JSON.
+  await second.getByRole('combobox', { name: 'Destination type', exact: true }).selectOption('article')
+  await second.getByLabel('Article slug', { exact: true }).fill('temporary-article')
+  await second.getByRole('combobox', { name: 'Destination type', exact: true }).selectOption('url')
+  await second.getByLabel('Link URL', { exact: true }).fill('https://example.com')
+  await grid.getByRole('button', { name: 'Move button 2 up', exact: true }).click()
+  await grid.getByRole('button', { name: 'Add button', exact: true }).click()
+  await grid.getByRole('button', { name: 'Remove button 3', exact: true }).click()
+  const expectedButtons = [{ text: 'Website', href: 'https://example.com' }, { text: 'Long March', article: 'long-march', image: '/assets/images/DMT.png' }]
+  for (const kind of ['Articles', 'Modals']) {
+    await page.getByRole('combobox', { name: 'Document format', exact: true }).selectOption(kind)
+    await expect(preview.locator('code span').first()).toBeAttached()
+    expect(await preview.locator('code').textContent()).toBe(code)
+    await expect(preview.locator('.content-button')).toHaveText(['Website', 'Long March'])
+    await expect(preview.getByRole('link', { name: 'Long March', exact: true })).toHaveAttribute('href', '/LongMarch')
+    await expect(preview.getByRole('link', { name: 'Website', exact: true })).toHaveCSS('background-color', 'rgb(0, 0, 0)')
+    await expect(preview.locator('.content-button img')).toHaveAttribute('src', '/assets/images/DMT.png')
+    await preview.getByRole('link', { name: 'Long March', exact: true }).click()
+    await expect(page).toHaveURL(/\/admin$/)
+    await page.getByRole('button', { name: 'Copy content JSON', exact: true }).click()
+    const content = JSON.parse(await page.evaluate(() => navigator.clipboard.readText()))
+    expect(content.body).toEqual([
+      { type: 'paragraph', text: 'Before the code' },
+      { type: 'code', code, language: 'javascript', filename: 'demo.js' },
+      { type: 'buttons', buttons: expectedButtons },
+    ])
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  // An unfinished URL neither appears in preview nor permits copying a row.
+  await first.getByLabel('Button text', { exact: true }).fill('Unsafe link')
+  await first.getByLabel('Link URL', { exact: true }).fill('javascript:alert(1)')
+  await expect(preview.getByRole('link', { name: 'Unsafe link', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Copy content JSON', exact: true })).toBeDisabled()
+  await first.getByLabel('Link URL', { exact: true }).fill('https://example.com')
+  await first.getByRole('textbox', { name: /^Button image URL/ }).fill('javascript:alert(1)')
+  await expect(preview.locator('.content-button img')).toHaveCount(1)
+  await expect(page.getByRole('button', { name: 'Copy full row', exact: true })).toBeDisabled()
+  await first.getByRole('textbox', { name: /^Button image URL/ }).fill('')
+  await expect(page.getByRole('button', { name: 'Copy full row', exact: true })).toBeEnabled()
+  expect(writes).toEqual([])
+})
+
+test('imported nested code and button grids remain editable and export without data loss', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  const writes = await mockAdmin(page)
+  await login(page)
+  const content = { thumbnail: '/assets/images/DMT.png', body: [{ type: 'group', layout: 'text', body: [
+    { type: 'code', code: 'int main() { return 42; }', language: 'cpp', filename: 'main.cpp' },
+    { type: 'buttons', buttons: [{ text: 'Project', article: 'long-march' }] },
+  ] }] }
+  await page.getByRole('button', { name: 'Import JSON', exact: true }).click()
+  await page.getByLabel('JSON to import', { exact: true }).fill(JSON.stringify(content))
+  await page.getByRole('button', { name: 'Load JSON', exact: true }).click()
+  await page.getByLabel('Document title', { exact: true }).fill('Imported project')
+  await page.getByRole('textbox', { name: 'Slug', exact: true }).fill('imported-project')
+  await expect(page.getByRole('textbox', { name: 'Source code', exact: true })).toHaveValue('int main() { return 42; }')
+  await page.getByRole('textbox', { name: 'Source code', exact: true }).fill('int main() {\n    return 7;\n}')
+  await page.getByRole('textbox', { name: /^Code language/ }).fill('unknown-language')
+  await page.getByLabel('Button text', { exact: true }).fill('Updated project')
+  await page.getByLabel('Article slug', { exact: true }).fill('another-project')
+  const preview = page.getByLabel('Live website preview', { exact: true })
+  await expect(preview.locator('code')).toHaveText('int main() {\n    return 7;\n}')
+  await expect(preview.getByRole('link', { name: 'Updated project', exact: true })).toHaveAttribute('href', '/articles?slug=another-project')
+  await page.getByRole('button', { name: 'Copy full row', exact: true }).click()
+  const row = JSON.parse(await page.evaluate(() => navigator.clipboard.readText()))
+  expect(row.published).toBe(false)
+  expect(row.content.body).toEqual([{ type: 'group', layout: 'text', body: [
+    { type: 'code', code: 'int main() {\n    return 7;\n}', language: 'unknown-language', filename: 'main.cpp' },
+    { type: 'buttons', buttons: [{ text: 'Updated project', article: 'another-project' }] },
+  ] }])
+  expect(writes).toEqual([])
+})

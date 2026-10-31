@@ -254,6 +254,8 @@ Images and links support root-relative paths such as `/assets/images/file.png` o
 
 ### Code samples in articles and modals
 
+In `/admin`, choose **Code sample** from **Add a block here**, then edit its source, language, and optional filename. See [Admin code samples](ADMIN.md#code-samples) for the editor workflow.
+
 Add a `code` block anywhere in `content.body`, just as you would add a paragraph. It also works inside a group. `code` holds the source itself; `language` selects syntax highlighting and `filename` optionally labels the sample:
 
 ```json
@@ -270,6 +272,8 @@ Highlighting uses **Shiki**, VS Code's TextMate grammars, and the **Dark+** them
 Use `\n` for line breaks, `\t` for tabs, `\"` for quotes, and `\\` for backslashes inside the JSON source string. Indentation is preserved, and long lines scroll horizontally within the code panel. Keyboard users can Tab to the panel and use arrow keys to scroll. Samples may contain up to 100,000 characters. HTML in a code sample is displayed as text and never executed.
 
 ### Button grids between content blocks
+
+In `/admin`, choose **Button grid** to edit the array visually, including labels, destination types, images, and button ordering. See [Admin button grids](ADMIN.md#button-grids) for details.
 
 Add a `buttons` block to an article's `content.body` wherever its grid should appear. It uses an array so you can add several buttons, reorder them, and add more paragraphs or code afterward. The shared body renderer also supports it in modals and nested groups.
 

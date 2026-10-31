@@ -38,7 +38,7 @@ const embedUrl = z.string().refine(isSafeEmbed, 'Unsupported embed URL')
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 // Choose exactly one destination. Article slugs use the site's existing routes;
 // href and image use the same safe URL rules as other content blocks.
-const buttonSchema = z.union([
+export const buttonSchema = z.union([
   z.object({ text: z.string().trim().min(1), article: slug, href: z.never().optional(), image: url.optional() }),
   z.object({ text: z.string().trim().min(1), href: url, article: z.never().optional(), image: url.optional() }),
 ])

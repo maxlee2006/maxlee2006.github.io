@@ -1,4 +1,4 @@
-import { recordSchema, type CmsRecord, type ContentBlock } from './content'
+import { buttonSchema, isSafeEmbed, isSafeUrl, recordSchema, type CmsRecord, type ContentBlock } from './content'
 
 // These names match the actual Supabase tables. The editor never calls them;
 // it uses this choice to label the preview and manual-paste instructions.
@@ -33,9 +33,35 @@ export function newBlock(type: ContentBlock['type']): ContentBlock {
     case 'heading': return { type, text: '' }
     case 'image': return { type, src: '', alt: '' }
     case 'link': return { type, href: '', text: '' }
+    case 'code': return { type, code: '', language: 'text' }
+    case 'buttons': return { type, buttons: [{ text: '', href: '' }] }
     case 'embed': return { type, src: '', title: '' }
     case 'group': return { type, layout: 'text', body: [] }
   }
+}
+
+// Drafts contain unfinished fields. Preview only safe destinations, and omit
+// unfinished images while retaining a valid button's black background. Export
+// still validates the complete document, so no field is silently lost there.
+export function previewBlocks(body: ContentBlock[]): ContentBlock[] {
+  return body.flatMap<ContentBlock>(block => {
+    if (block.type === 'group') return [{ ...block, body: previewBlocks(block.body) }]
+    if (block.type === 'image' && !isSafeUrl(block.src)) return []
+    if (block.type === 'link' && !isSafeUrl(block.href)) return []
+    if (block.type === 'buttons') {
+      const buttons = block.buttons.flatMap(button => {
+        const parsed = buttonSchema.safeParse({ ...button, image: undefined })
+        if (!parsed.success) return []
+        return [{ ...parsed.data, image: button.image && isSafeUrl(button.image) ? button.image : undefined }]
+      })
+      return buttons.length ? [{ ...block, buttons }] : []
+    }
+    if (block.type === 'embed') {
+      if (!isSafeEmbed(block.src)) return []
+      return [{ ...block, height: block.height && Number.isInteger(block.height) && block.height >= 100 && block.height <= 1000 ? block.height : undefined }]
+    }
+    return [block]
+  })
 }
 
 // The public schema deliberately accepts published rows only. Validate a draft

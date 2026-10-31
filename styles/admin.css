@@ -56,6 +56,10 @@
 .admin-insert { display: flex; align-items: center; gap: 6px; color: #9ca3af; padding: 10px 0; }
 .admin-shell .admin-insert select { font-size: 12px; border: 0; background: transparent; color: #d1d5db; padding: 3px; width: 160px; }
 .admin-block .admin-blocks { padding-left: 10px; border-left: 1px solid #6b7280; margin-top: 12px; }
+.admin-shell .admin-code-input { font: 13px/1.7 Consolas, 'SFMono-Regular', 'Liberation Mono', monospace; white-space: pre; tab-size: 4; resize: vertical; overflow: auto; }
+.admin-button-list { display: grid; gap: 14px; padding-top: 16px; min-width: 0; }
+.admin-button-entry { min-width: 0; border: 1px solid #374151; padding: 10px 12px 0; }
+.admin-button-entry legend { padding: 0 6px; font-size: 13px; color: #d1d5db; }
 /* Let the output panel scroll independently so copy controls remain reachable
    beside a long document. Stack it below the editor on narrower screens. */
 .admin-review { position: sticky; top: 12px; min-width: 0; max-height: calc(100vh - 24px); overflow-y: auto; }

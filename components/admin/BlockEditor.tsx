@@ -1,9 +1,10 @@
 import type { ContentBlock } from '../../lib/cms/content'
 import { newBlock } from '../../lib/cms/editor'
 import { Field, GrowingText, TextField } from './Fields'
+import ButtonsEditor from './ButtonsEditor'
 
 const blockNames: Record<ContentBlock['type'], string> = {
-  paragraph: 'Paragraph', heading: 'Heading', image: 'Image', link: 'Link', embed: 'Embed', group: 'Group',
+  paragraph: 'Paragraph', heading: 'Heading', image: 'Image', link: 'Link', code: 'Code sample', buttons: 'Button grid', embed: 'Embed', group: 'Group',
 }
 
 // Each insert control belongs to a position in the ordered body array. This is
@@ -52,6 +53,14 @@ export default function BlockEditor({ body, onChange, depth = 0, path = 'body' }
             <TextField label="Link text" multiline value={block.text} onChange={text => replace(index, { ...block, text })} />
             <TextField label="Link URL" value={block.href} onChange={href => replace(index, { ...block, href })} />
           </div>}
+          {block.type === 'code' && <>
+            <div className="admin-field-grid">
+              <TextField label="Code language" value={block.language ?? ''} placeholder="cpp, javascript, python, text…" hint="Leave empty for plain text." onChange={language => replace(index, { ...block, language: language || undefined })} />
+              <TextField label="Code filename (optional)" value={block.filename ?? ''} placeholder="main.cpp" onChange={filename => replace(index, { ...block, filename: filename || undefined })} />
+            </div>
+            <Field label="Source code"><textarea className="admin-code-input" rows={10} maxLength={100000} spellCheck={false} autoCapitalize="none" autoCorrect="off" wrap="off" value={block.code} placeholder="Paste or write your code…" onChange={event => replace(index, { ...block, code: event.target.value })} /></Field>
+          </>}
+          {block.type === 'buttons' && <ButtonsEditor buttons={block.buttons} onChange={buttons => replace(index, { ...block, buttons })} />}
           {block.type === 'embed' && <div className="admin-field-grid">
             <TextField label="Embed URL" value={block.src} placeholder="https://www.youtube.com/embed/…" onChange={src => replace(index, { ...block, src })} />
             <TextField label="Embed title" value={block.title} onChange={title => replace(index, { ...block, title })} />

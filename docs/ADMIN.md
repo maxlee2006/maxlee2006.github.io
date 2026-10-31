@@ -1,6 +1,6 @@
 # Admin: write, preview, and copy JSON
 
-The **Admin** page is at `/admin`, with an Admin link at the bottom of the home page. It is part of the `feat/admin-document-editor` branch. Pushing this branch does not publish it; GitHub Pages deploys only after changes reach `main`.
+The **Admin** page is at `/admin`, with an Admin link at the bottom of the home page. The editor from `main` is included in `feat/code-blocks-and-article-buttons`, together with controls for code samples and button grids. Pushing a feature branch does not publish it; GitHub Pages deploys only after changes reach `main`.
 
 Admin is a document editor that produces the same JSON the existing website already reads. You can choose **Article** or **Modal**, compose text and media in order, preview the result, and copy the JSON. **It never inserts, updates, or deletes Articles or Modals.** Publishing remains a manual step in Supabase's Table Editor.
 
@@ -24,6 +24,8 @@ Text is plain text, with line breaks, rather than HTML or Markdown. The format h
 | Heading | Heading text |
 | Image | Image URL, alternative text, and optional caption |
 | Link | Link URL and display text |
+| Code sample | Source code, syntax language, and optional filename |
+| Button grid | An ordered list of button labels, article slugs or link URLs, and optional image URLs |
 | Embed | Supported embed URL, accessible title, and optional height of 100–1000 px |
 | Group | Text, embeds, or gallery layout, with its own ordered blocks |
 
@@ -32,6 +34,24 @@ Groups support up to four nested levels. Each body holds up to 500 blocks, match
 Images and links accept HTTPS URLs or root-relative paths such as `/assets/images/DMT.png`. Existing image files stay under `public/assets`. Admin accepts image links; it does not upload image files. Embeds retain the existing YouTube, Steam, and MusicNerd restrictions. Incomplete or unsafe media URLs stay hidden in preview; validation must pass before copying an export. Previewing an external image or embed contacts that provider.
 
 For card date/method, an unchecked override inherits the main value. A checked override with empty text deliberately hides that value on the card. The editor preserves this distinction in JSON.
+
+### Code samples
+
+Choose **Code sample** from an insert control. Paste or write source into **Source code**; line breaks, tabs, quotes, and indentation are preserved. The source field uses a monospace font, scrolls horizontally for long lines, and disables spellcheck. You can enter up to 100,000 characters.
+
+Set **Code language** to a Shiki language ID such as `cpp`, `javascript`, `python`, `glsl`, or `csharp`. The live preview uses VS Code's Dark+ highlighting. Empty or unknown languages display plain text. **Code filename (optional)** labels the code panel. Code is displayed as text; pasted HTML does not execute. Code samples work in articles, modals, and groups. Importing and copying JSON preserves the source without requiring you to escape it manually.
+
+### Button grids
+
+Choose **Button grid**, then fill in the first button or use **Add button** for more. Each button has:
+
+- **Button text**, displayed in the site's header font.
+- **Destination type**: choose **Article** and enter its slug, or **Website or site path** and enter an HTTPS URL or root-relative path. Switching types removes the previous destination from the exported JSON.
+- **Button image URL (optional)**: enter an HTTPS image URL or `/assets/...` path. Leave it empty for a black button.
+
+Use each button's arrows to reorder the array and **Remove** to delete an entry. A grid must contain 1–100 buttons. The block's own arrows move the entire grid among paragraphs, code samples, and other blocks. Grids can also be inserted inside groups.
+
+Preview shows valid button destinations and omits unfinished or unsafe ones. An unfinished image previews as a black button, but invalid URLs must be corrected before JSON can be copied. Preview links do not navigate away from the editor, so inspecting a button keeps your draft in place. Both Article and Modal previews use the same code and grid components as the public site.
 
 ## Copy and publish manually
 
@@ -69,6 +89,7 @@ Comments in the new files explain the data flow and important security choices. 
 | `lib/cms/editor.ts` | Draft shape, new blocks, import/export helpers, and reuse of the existing public-content validator |
 | `components/admin/DocumentEditor.tsx` | One document state, metadata fields, import, validation, clipboard output, and unsaved-work warnings |
 | `components/admin/BlockEditor.tsx` | Recursive ordered blocks, insert controls, and move/remove operations |
+| `components/admin/ButtonsEditor.tsx` | Button labels, destinations, images, and ordered array controls |
 | `components/admin/Fields.tsx` | Accessible labels and textareas that grow as you type |
 | `components/admin/DocumentPreview.tsx` | Live article/modal/card previews and filtering of unfinished media URLs |
 | `components/ArticleView.tsx`, `components/MediaModal.tsx` | Shared public-site rendering, reused by Admin |
@@ -99,4 +120,6 @@ The style and copy update was checked with another successful production build, 
 
 The migration file's timestamp was created by the Supabase CLI. The connected migration tool records its own remote timestamp, as it did for the earlier CMS migrations. Reconcile local and remote migration history before adopting a CLI `db push` workflow. Do not rerun the existing CMS seed or recreate the live allowlist to deploy this branch.
 
-All website source changes stay on `feat/admin-document-editor`; nothing is merged to `main` or deployed by this work.
+The code-sample and button-grid editor updates stay on `feat/code-blocks-and-article-buttons`; this work does not deploy the website or write production content.
+
+After merging `main` into that branch, verification passed for all **20 unit/database tests** and **12 browser tests**, lint, and the production static export (including `/admin`). Browser coverage includes desktop/mobile code entry, highlighting in Article and Modal previews, button add/reorder/remove controls, destination switching, safe unfinished previews, nested JSON imports, and clipboard exports. The read-only live CMS check validated two published articles and twelve modals. Admin login and editing tests use mocked HTTP responses and do not change live accounts or content.
